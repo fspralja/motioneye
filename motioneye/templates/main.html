@@ -826,6 +826,41 @@
                         <td class="settings-item-value"><input type="text" class="styled number movies camera-config" id="moviesLifetimeEntry"><span class="settings-item-unit">days</span></td>
                         <td><span class="help-mark" title="sets the number of days after which the movies will be deleted automatically">?</span></td>
                     </tr>
+
+                    <tr class="settings-item advanced-setting" depends="motionDetectionEnabled preserveMovies">
+                        <td colspan="100"><div class="settings-item-separator"></div></td>
+                    </tr>
+                    <tr class="settings-item advanced-setting" depends="motionDetectionEnabled preserveMovies">
+                        <td class="settings-item-label"><span class="settings-item-label">Create animation</span></td>
+                        <td class="settings-item-value"><input type="checkbox" class="styled movies camera-config" id="animationEnabledSwitch"></td>
+                        <td><span class="help-mark" title="enable this if you want to create animation after motion triggered video was created, check notification options for animation use after enabling.">?</span></td>
+                    </tr>
+                    <tr class="settings-item advanced-setting" required="true" depends="animationEnabled motionDetectionEnabled preserveMovies" strip="true">
+                        <td class="settings-item-label"><span class="settings-item-label">Animation resolution</span></td>
+                        <td class="settings-item-value"><input type="text" class="number styled movies camera-config" id="animationResolutionEntry" placeholder="480"><span class="settings-item-unit">pixel</span></td>
+                        <td><span class="help-mark" title="The resulting image width in pixels">?</span></td>
+                    </tr>
+                    <tr class="settings-item advanced-setting" required="true" depends="animationEnabled motionDetectionEnabled preserveMovies" strip="true">
+                        <td class="settings-item-label"><span class="settings-item-label">Framerate</span></td>
+                        <td class="settings-item-value"><input type="text" class="number styled movies camera-config" id="animationFramerateEntry" placeholder="1"><span class="settings-item-unit">fps</span></td>
+                        <td><span class="help-mark" title="The numbers of frames taken out of the movie per second">?</span></td>
+                    </tr>
+                    <tr class="settings-item advanced-setting" required="true" depends="animationEnabled motionDetectionEnabled preserveMovies" strip="true">
+                        <td class="settings-item-label"><span class="settings-item-label">Animation delay</span></td>
+                        <td class="settings-item-value"><input type="text" class="number styled movies camera-config" id="animationDelayEntry" placeholder="1"><span class="settings-item-unit">ms</span></td>
+                        <td><span class="help-mark" title="The delay between resulting animation frames in milliseconds">?</span></td>
+                    </tr>
+                    <tr class="settings-item advanced-setting" required="true" depends="animationEnabled motionDetectionEnabled preserveMovies" strip="true">
+                        <td class="settings-item-label"><span class="settings-item-label">Optimization level</span></td>
+                        <td class="settings-item-value">
+                            <select class="styled movies camera-config" id="animationOptimizeSelect">
+                                <option value="1">1 - Stores only the changed portion of each image.</option>
+                                <option value="2">2 - Also uses transparency to shrink the file further.</option>
+                                <option value="3">3 - Try several optimization methods (usually slower, sometimes better results). </option>
+                            </select>
+                        </td>
+                        <td><span class="help-mark" title="Optimize output GIF animations for space. Level determines how much optimization is done; higher levels take longer, but may have better results">?</span></td>
+                    </tr>
                     {% for config in camera_sections.get('movies', {}).get('configs', []) %}
                         {{config_item(config)}}
                     {% endfor %}
@@ -999,6 +1034,16 @@
                         <td class="settings-item-value"><div class="button normal-button test-button" id="emailTestButton">Test Email</div></td>
                         <td><span class="help-mark" title="click this button to test email notifications after you have filled in the required details">?</span></td>
                     </tr>
+
+                    <tr class="settings-item advanced-setting" depends="emailNotificationsEnabled animationEnabled motionDetectionEnabled preserveMovies">
+                        <td colspan="100"><div class="settings-item-separator"></div></td>
+                    </tr>
+                    <tr class="settings-item advanced-setting" depends="emailNotificationsEnabled animationEnabled motionDetectionEnabled preserveMovies">
+                        <td class="settings-item-label"><span class="settings-item-label">Send email animation</span></td>
+                        <td class="settings-item-value"><input type="checkbox" class="styled notifications camera-config" id="animationEmailEnabledSwitch"></td>
+                        <td><span class="help-mark" title="enable this if you want to send email animations when movie finished creating, uses settings from upper send email section.">?</span></td>
+                    </tr>
+
                     <tr class="settings-item advanced-setting" depends="motionDetectionEnabled">
                         <td colspan="100"><div class="settings-item-separator"></div></td>
                     </tr>

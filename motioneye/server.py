@@ -264,6 +264,8 @@ def test_requirements():
     import mediafiles
     has_ffmpeg = mediafiles.find_ffmpeg() is not None
     
+    has_gifsicle = mediafiles.find_gifsicle() is not None
+
     import v4l2ctl
     has_v4lutils = v4l2ctl.find_v4l2_ctl() is not None
 
@@ -281,6 +283,13 @@ def test_requirements():
         
         else:
             logging.info('ffmpeg not installed')
+
+    if not has_gifsicle:
+        if has_ffmpeg:
+            logging.warn('you have ffmpeg installed, but no gifsicle')
+
+        else:
+            logging.info('gifsicle not installed')
 
     if not has_v4lutils:
         if has_motion:

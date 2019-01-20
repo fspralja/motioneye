@@ -45,7 +45,8 @@ messages = {
 }
 
 subjects = {
-    'motion_start': 'motionEye: motion detected by "%(camera)s"'
+    'motion_start': 'motionEye: motion detected by "%(camera)s"',
+    'motion_end': 'motionEye: motion animation from "%(camera)s"'
 }
 
 

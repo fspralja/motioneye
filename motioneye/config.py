@@ -788,6 +788,16 @@ def motion_camera_ui_to_dict(ui, old_config=None):
         'max_movie_time': ui['max_movie_length'],
         '@preserve_movies': int(ui['preserve_movies']),
 
+        # animation
+        '@animation_enabled':  ui['animation_enabled'],
+        '@animation_resolution':  int(ui['animation_resolution']),
+        '@animation_framerate':  int(ui['animation_framerate']),
+        '@animation_delay':  int(ui['animation_delay']),
+        '@animation_optimize':  int(ui['animation_optimize']),
+
+        # animation notification
+        '@animation_email_enabled':  ui['animation_email_enabled'],
+
         # motion detection
         '@motion_detection': ui['motion_detection'],
         'emulate_motion': False,
@@ -995,6 +1005,14 @@ def motion_camera_ui_to_dict(ui, old_config=None):
     data['ffmpeg_variable_bitrate'] = int(vbr)
 
     # motion detection
+    data['@animation_enabled'] = ui['animation_enabled']
+    data['@animation_resolution'] = ui['animation_resolution']
+    data['@animation_framerate'] = ui['animation_framerate']
+    data['@animation_delay'] = ui['animation_delay']
+    data['@animation_optimize'] = ui['animation_optimize']
+
+    # animation notification
+    data['@animation_email_enabled'] = ui['animation_email_enabled']
 
     if ui['despeckle_filter']:
         data['despeckle_filter'] = old_config['despeckle_filter'] or 'EedDl'
@@ -1438,6 +1456,16 @@ def motion_camera_dict_to_ui(data):
         ui['mask'] = True
         ui['mask_type'] = 'smart'
         ui['smart_mask_sluggishness'] = 10 - data['smart_mask_speed']
+
+    # animation
+    ui['animation_enabled'] = data['@animation_enabled'] == True
+    ui['animation_resolution'] = data['@animation_resolution']
+    ui['animation_framerate'] = data['@animation_framerate']
+    ui['animation_delay'] = data['@animation_delay']
+    ui['animation_optimize'] = data['@animation_optimize']
+
+    # animation notification
+    ui['animation_email_enabled'] = data['@animation_email_enabled'] == True
 
     # working schedule
     working_schedule = data['@working_schedule']
@@ -2039,6 +2067,16 @@ def _set_default_motion_camera(camera_id, data):
 
     data.setdefault('@preserve_movies', 0)
     data.setdefault('@manual_record', False)
+
+    # animation defaults
+    data.setdefault('@animation_enabled', False)
+    data.setdefault('@animation_resolution', 480)
+    data.setdefault('@animation_framerate', 1)
+    data.setdefault('@animation_delay', 10)
+    data.setdefault('@animation_optimize', 2)
+
+    # animation notification
+    data.setdefault('@animation_email_enabled', False)
 
     data.setdefault('@working_schedule', '')
     data.setdefault('@working_schedule_type', 'outside')

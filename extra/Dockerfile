@@ -19,6 +19,7 @@ RUN apt-get --quiet update && \
     DEBIAN_FRONTEND="noninteractive" apt-get --quiet --yes --option Dpkg::Options::="--force-confnew" --no-install-recommends install \
     curl \
     ffmpeg \
+    gifsicle \
     libmysqlclient20 \
     libpq5 \
     lsb-release \

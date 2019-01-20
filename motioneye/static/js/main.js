@@ -1897,6 +1897,16 @@ function cameraUi2Dict() {
         'max_movie_length': $('#maxMovieLengthEntry').val(),
         'preserve_movies': $('#preserveMoviesSelect').val() >= 0 ? $('#preserveMoviesSelect').val() : $('#moviesLifetimeEntry').val(),
         
+        /* animation */
+        'animation_enabled': $('#animationEnabledSwitch')[0].checked,
+        'animation_resolution': $('#animationResolutionEntry').val(),
+        'animation_framerate': $('#animationFramerateEntry').val(),
+        'animation_delay': $('#animationDelayEntry').val(),
+        'animation_optimize': $('#animationOptimizeSelect').val(),
+
+        /* animation notifications */
+        'animation_email_enabled': $('#animationEmailEnabledSwitch')[0].checked,
+
         /* motion detection */
         'motion_detection': $('#motionDetectionEnabledSwitch')[0].checked,
         'frame_change_threshold': $('#frameChangeThresholdSlider').val(),
@@ -2260,6 +2270,16 @@ function dict2CameraUi(dict) {
     markHideIfNull('preserve_movies', 'preserveMoviesSelect');
     $('#moviesLifetimeEntry').val(dict['preserve_movies']); markHideIfNull('preserve_movies', 'moviesLifetimeEntry');
     
+    /* animation */
+    $('#animationEnabledSwitch')[0].checked = dict['animation_enabled']; markHideIfNull('animation_enabled', 'animationEnabledSwitch');
+    $('#animationResolutionEntry').val(dict['animation_resolution']); markHideIfNull('animation_resolution', 'animationResolutionEntry');
+    $('#animationFramerateEntry').val(dict['animation_framerate']); markHideIfNull('animation_framerate', 'animationFramerateEntry');
+    $('#animationDelayEntry').val(dict['animation_delay']); markHideIfNull('animation_delay', 'animationDelayEntry');
+    $('#animationOptimizeSelect').val(dict['animation_optimize']);
+
+    /* animation notification */
+    $('#animationEmailEnabledSwitch')[0].checked = dict['animation_email_enabled']; markHideIfNull('animation_email_enabled', 'animationEmailEnabledSwitch');
+
     /* motion detection */
     $('#motionDetectionEnabledSwitch')[0].checked = dict['motion_detection']; markHideIfNull('motion_detection', 'motionDetectionEnabledSwitch');
     $('#frameChangeThresholdSlider').val(dict['frame_change_threshold']); markHideIfNull('frame_change_threshold', 'frameChangeThresholdSlider');
