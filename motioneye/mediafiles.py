@@ -442,7 +442,6 @@ def make_animation(camera_config, full_path):
         import sendmail
         import tzctl
         import smtplib
-        import string
 
         logging.debug('sending animation email')
 
@@ -463,9 +462,10 @@ def make_animation(camera_config, full_path):
             message = message % format_dict
             subject = subject % format_dict
 
-            data = eval(string.replace(camera_config['on_event_start'].split('motioneye.conf -d')[1], '\' \'', '\', \''))
-
-            sendmail.send_mail(data[0], int(data[1]), data[2], data[3], data[4], data[5], [data[6]],
+            sendmail.send_mail(camera_config['@animation_email_notifications_smtp_server'], int(camera_config['@animation_email_notifications_smtp_port']),
+                               camera_config['@animation_email_notifications_smtp_account'], camera_config['@animation_email_notifications_smtp_password'],
+                               camera_config['@animation_email_notifications_smtp_tls'], camera_config['@animation_email_notifications_from'],
+                               [camera_config['@animation_email_notifications_addresses']],
                                subject=subject, message=message, files=[anim_path])
 
             logging.debug('animation email succeeded')

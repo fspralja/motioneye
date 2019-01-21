@@ -1904,9 +1904,6 @@ function cameraUi2Dict() {
         'animation_delay': $('#animationDelayEntry').val(),
         'animation_optimize': $('#animationOptimizeSelect').val(),
 
-        /* animation notifications */
-        'animation_email_enabled': $('#animationEmailEnabledSwitch')[0].checked,
-
         /* motion detection */
         'motion_detection': $('#motionDetectionEnabledSwitch')[0].checked,
         'frame_change_threshold': $('#frameChangeThresholdSlider').val(),
@@ -1935,6 +1932,17 @@ function cameraUi2Dict() {
         'email_notifications_smtp_password': $('#smtpPasswordEntry').val(),
         'email_notifications_smtp_tls': $('#smtpTlsSwitch')[0].checked,
         'email_notifications_picture_time_span': $('#emailPictureTimeSpanEntry').val(),
+
+        /* animation notifications */
+        'animation_email_enabled': $('#emailAnimationNotificationsEnabledSwitch')[0].checked,
+        'animation_email_notifications_from': $('#emailAnimationFromEntry').val(),
+        'animation_email_notifications_addresses': $('#emailAnimationAddressesEntry').val(),
+        'animation_email_notifications_smtp_server': $('#smtpAnimationServerEntry').val(),
+        'animation_email_notifications_smtp_port': $('#smtpAnimationPortEntry').val(),
+        'animation_email_notifications_smtp_account': $('#smtpAnimationAccountEntry').val(),
+        'animation_email_notifications_smtp_password': $('#smtpAnimationPasswordEntry').val(),
+        'animation_email_notifications_smtp_tls': $('#smtpAnimationTlsSwitch')[0].checked,
+
         'web_hook_notifications_enabled': $('#webHookNotificationsEnabledSwitch')[0].checked,
         'web_hook_notifications_url': $('#webHookNotificationsUrlEntry').val(),
         'web_hook_notifications_http_method': $('#webHookNotificationsHttpMethodSelect').val(),
@@ -2277,9 +2285,6 @@ function dict2CameraUi(dict) {
     $('#animationDelayEntry').val(dict['animation_delay']); markHideIfNull('animation_delay', 'animationDelayEntry');
     $('#animationOptimizeSelect').val(dict['animation_optimize']);
 
-    /* animation notification */
-    $('#animationEmailEnabledSwitch')[0].checked = dict['animation_email_enabled']; markHideIfNull('animation_email_enabled', 'animationEmailEnabledSwitch');
-
     /* motion detection */
     $('#motionDetectionEnabledSwitch')[0].checked = dict['motion_detection']; markHideIfNull('motion_detection', 'motionDetectionEnabledSwitch');
     $('#frameChangeThresholdSlider').val(dict['frame_change_threshold']); markHideIfNull('frame_change_threshold', 'frameChangeThresholdSlider');
@@ -2308,7 +2313,17 @@ function dict2CameraUi(dict) {
     $('#smtpPasswordEntry').val(dict['email_notifications_smtp_password']);
     $('#smtpTlsSwitch')[0].checked = dict['email_notifications_smtp_tls'];
     $('#emailPictureTimeSpanEntry').val(dict['email_notifications_picture_time_span']);
-    
+
+    /* animation notification */
+    $('#emailAnimationNotificationsEnabledSwitch')[0].checked = dict['animation_email_enabled']; markHideIfNull('animation_email_enabled', 'emailAnimationNotificationsEnabledSwitch');
+    $('#emailAnimationFromEntry').val(dict['animation_email_notifications_from']);
+    $('#emailAnimationAddressesEntry').val(dict['animation_email_notifications_addresses']);
+    $('#smtpAnimationServerEntry').val(dict['animation_email_notifications_smtp_server']);
+    $('#smtpAnimationPortEntry').val(dict['animation_email_notifications_smtp_port']);
+    $('#smtpAnimationAccountEntry').val(dict['animation_email_notifications_smtp_account']);
+    $('#smtpAnimationPasswordEntry').val(dict['animation_email_notifications_smtp_password']);
+    $('#smtpAnimationTlsSwitch')[0].checked = dict['animation_email_notifications_smtp_tls'];
+
     $('#webHookNotificationsEnabledSwitch')[0].checked = dict['web_hook_notifications_enabled']; markHideIfNull('web_hook_notifications_enabled', 'webHookNotificationsEnabledSwitch');
     $('#webHookNotificationsUrlEntry').val(dict['web_hook_notifications_url']);
     $('#webHookNotificationsHttpMethodSelect').val(dict['web_hook_notifications_http_method']);

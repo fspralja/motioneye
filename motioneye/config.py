@@ -795,9 +795,6 @@ def motion_camera_ui_to_dict(ui, old_config=None):
         '@animation_delay':  int(ui['animation_delay']),
         '@animation_optimize':  int(ui['animation_optimize']),
 
-        # animation notification
-        '@animation_email_enabled':  ui['animation_email_enabled'],
-
         # motion detection
         '@motion_detection': ui['motion_detection'],
         'emulate_motion': False,
@@ -814,6 +811,16 @@ def motion_camera_ui_to_dict(ui, old_config=None):
         'mask_file': '',
         'output_debug_pictures': ui['create_debug_media'],
         'ffmpeg_output_debug_movies': ui['create_debug_media'],
+
+        # animation notification
+        '@animation_email_enabled': ui['animation_email_enabled'],
+        '@animation_email_notifications_from': ui['animation_email_notifications_from'],
+        '@animation_email_notifications_addresses': ui['animation_email_notifications_addresses'],
+        '@animation_email_notifications_smtp_server': ui['animation_email_notifications_smtp_server'],
+        '@animation_email_notifications_smtp_port': int(ui['animation_email_notifications_smtp_port']),
+        '@animation_email_notifications_smtp_account': ui['animation_email_notifications_smtp_account'],
+        '@animation_email_notifications_smtp_password': ui['animation_email_notifications_smtp_password'],
+        '@animation_email_notifications_smtp_tls': ui['animation_email_notifications_smtp_tls'],
 
         # working schedule
         '@working_schedule': '',
@@ -1004,7 +1011,7 @@ def motion_camera_ui_to_dict(ui, old_config=None):
 
     data['ffmpeg_variable_bitrate'] = int(vbr)
 
-    # motion detection
+    # animation
     data['@animation_enabled'] = ui['animation_enabled']
     data['@animation_resolution'] = ui['animation_resolution']
     data['@animation_framerate'] = ui['animation_framerate']
@@ -1013,6 +1020,13 @@ def motion_camera_ui_to_dict(ui, old_config=None):
 
     # animation notification
     data['@animation_email_enabled'] = ui['animation_email_enabled']
+    data['@animation_email_notifications_from'] = ui['animation_email_notifications_from']
+    data['@animation_email_notifications_addresses'] = ui['animation_email_notifications_addresses']
+    data['@animation_email_notifications_smtp_server'] = ui['animation_email_notifications_smtp_server']
+    data['@animation_email_notifications_smtp_port'] = ui['animation_email_notifications_smtp_port']
+    data['@animation_email_notifications_smtp_account'] = ui['animation_email_notifications_smtp_account']
+    data['@animation_email_notifications_smtp_password'] = ui['animation_email_notifications_smtp_password']
+    data['@animation_email_notifications_smtp_tls'] = ui['animation_email_notifications_smtp_tls']
 
     if ui['despeckle_filter']:
         data['despeckle_filter'] = old_config['despeckle_filter'] or 'EedDl'
@@ -1209,6 +1223,13 @@ def motion_camera_dict_to_ui(data):
         'max_movie_length': data['max_movie_time'],
         'preserve_movies': data['@preserve_movies'],
 
+        # animation
+        'animation_enabled': False,
+        'animation_resolution': 480,
+        'animation_framerate': 1,
+        'animation_delay': 10,
+        'animation_optimize': 1,
+
         # motion detection
         'motion_detection': data['@motion_detection'],
         'show_frame_changes': data['text_changes'] or data['locate_motion_mode'],
@@ -1231,6 +1252,16 @@ def motion_camera_dict_to_ui(data):
         'web_hook_notifications_enabled': False,
         'command_notifications_enabled': False,
         'command_end_notifications_enabled': False,
+
+        # animation notification
+        'animation_email_enabled': False,
+        'animation_email_notifications_from': '',
+        'animation_email_notifications_addresses': '',
+        'animation_email_notifications_smtp_server': '',
+        'animation_email_notifications_smtp_port': 587,
+        'animation_email_notifications_smtp_account': '',
+        'animation_email_notifications_smtp_password': '',
+        'animation_email_notifications_smtp_tls': True,
         
         # working schedule
         'working_schedule': False,
@@ -1465,7 +1496,14 @@ def motion_camera_dict_to_ui(data):
     ui['animation_optimize'] = data['@animation_optimize']
 
     # animation notification
-    ui['animation_email_enabled'] = data['@animation_email_enabled'] == True
+    ui['animation_email_enabled'] = data['@animation_email_enabled']
+    ui['animation_email_notifications_from'] = data['@animation_email_notifications_from']
+    ui['animation_email_notifications_addresses'] = data['@animation_email_notifications_addresses']
+    ui['animation_email_notifications_smtp_server'] = data['@animation_email_notifications_smtp_server']
+    ui['animation_email_notifications_smtp_port'] = data['@animation_email_notifications_smtp_port']
+    ui['animation_email_notifications_smtp_account'] = data['@animation_email_notifications_smtp_account']
+    ui['animation_email_notifications_smtp_password'] = data['@animation_email_notifications_smtp_password']
+    ui['animation_email_notifications_smtp_tls'] = data['@animation_email_notifications_smtp_tls']
 
     # working schedule
     working_schedule = data['@working_schedule']
@@ -2073,10 +2111,17 @@ def _set_default_motion_camera(camera_id, data):
     data.setdefault('@animation_resolution', 480)
     data.setdefault('@animation_framerate', 1)
     data.setdefault('@animation_delay', 10)
-    data.setdefault('@animation_optimize', 2)
+    data.setdefault('@animation_optimize', 1)
 
     # animation notification
     data.setdefault('@animation_email_enabled', False)
+    data.setdefault('@animation_email_notifications_from', '')
+    data.setdefault('@animation_email_notifications_addresses', '')
+    data.setdefault('@animation_email_notifications_smtp_server', '')
+    data.setdefault('@animation_email_notifications_smtp_port', 587)
+    data.setdefault('@animation_email_notifications_smtp_account', '')
+    data.setdefault('@animation_email_notifications_smtp_password', '')
+    data.setdefault('@animation_email_notifications_smtp_tls', True)
 
     data.setdefault('@working_schedule', '')
     data.setdefault('@working_schedule_type', 'outside')
