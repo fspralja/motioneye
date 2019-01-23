@@ -434,48 +434,9 @@ def make_animation(camera_config, full_path):
 
         return None
 
-    #notifi handler and move there
-
     # animation notification
-    if camera_config['@animation_email_enabled']:
-        import socket
-        import sendmail
-        import tzctl
-        import smtplib
-
-        logging.debug('sending animation email')
-
-        try:
-            subject = sendmail.subjects['motion_end']
-            message = sendmail.messages['motion_start']
-            format_dict = {
-                'camera': camera_config['@name'],
-                'hostname': socket.gethostname(),
-                'moment': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            }
-            if settings.LOCAL_TIME_FILE:
-                format_dict['timezone'] = tzctl.get_time_zone()
-
-            else:
-                format_dict['timezone'] = 'local time'
-
-            message = message % format_dict
-            subject = subject % format_dict
-
-            sendmail.send_mail(camera_config['@animation_email_notifications_smtp_server'], int(camera_config['@animation_email_notifications_smtp_port']),
-                               camera_config['@animation_email_notifications_smtp_account'], camera_config['@animation_email_notifications_smtp_password'],
-                               camera_config['@animation_email_notifications_smtp_tls'], camera_config['@animation_email_notifications_from'],
-                               [camera_config['@animation_email_notifications_addresses']],
-                               subject=subject, message=message, files=[anim_path])
-
-            logging.debug('animation email succeeded')
-
-        except Exception as e:
-            if isinstance(e, smtplib.SMTPResponseException):
-                msg = e.smtp_error
-            else:
-                msg = str(e)
-            logging.error('animation email failed: %s' % msg, exc_info=True)
+    import notifications
+    notifications.queue_animation(camera_config, anim_path)
 
     return anim_path
 

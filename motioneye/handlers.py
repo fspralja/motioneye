@@ -462,6 +462,8 @@ class ConfigHandler(BaseHandler):
         error = [None]
         
         def finish():
+            import notifications
+            notifications.config_changed()
             if reboot[0]:
                 if settings.ENABLE_REBOOT:
                     def call_reboot():
@@ -912,6 +914,15 @@ class ConfigHandler(BaseHandler):
 
                     logging.error('notification email test failed: %s' % msg, exc_info=True)
                     self.finish_json({'error': str(msg)})
+
+            elif what == 'telegram':
+                logging.debug('testing notification telegram')
+                import notifications
+                res = notifications.send_telegram_notification(camera_config={'@telegram_token': data['telegram_token'], '@telegram_name': data['telegram_name']}, message="Hello telegram!")
+                if res is None:
+                    self.finish_json()
+                else:
+                    self.finish_json({'error': str(res)})
 
             elif what == 'network_share':
                 logging.debug('testing access to network share //%s/%s' % (data['server'], data['share']))
@@ -1804,6 +1815,9 @@ class RelayEventHandler(BaseHandler):
             return self.finish_json()
         
         if event == 'start':
+            import notifications
+            notifications.queue_motion(camera_id, camera_config)
+
             if not camera_config['@motion_detection']:
                 logging.debug('ignoring start event for camera with id %s and motion detection disabled' % camera_id)
                 return self.finish_json()

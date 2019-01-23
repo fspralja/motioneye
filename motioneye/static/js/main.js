@@ -930,6 +930,7 @@ function initUI() {
     /* test buttons */
     $('div#uploadTestButton').click(doTestUpload);
     $('div#emailTestButton').click(doTestEmail);
+    $('div#telegramTestButton').click(doTestTelegram);
     $('div#networkShareTestButton').click(doTestNetworkShare);
     
     /* mask editor buttons */
@@ -1943,6 +1944,13 @@ function cameraUi2Dict() {
         'animation_email_notifications_smtp_password': $('#smtpAnimationPasswordEntry').val(),
         'animation_email_notifications_smtp_tls': $('#smtpAnimationTlsSwitch')[0].checked,
 
+        /* telegram notifications */
+        'telegram_enabled': $('#telegramNotificationsEnabledSwitch')[0].checked,
+        'telegram_motion_enabled': $('#telegramMotionNotificationsEnabledSwitch')[0].checked,
+        'telegram_animation_enabled': $('#telegramAnimationNotificationsEnabledSwitch')[0].checked,
+        'telegram_token': $('#telegramTokenEntry').val(),
+        'telegram_name': $('#telegramNameEntry').val(),
+
         'web_hook_notifications_enabled': $('#webHookNotificationsEnabledSwitch')[0].checked,
         'web_hook_notifications_url': $('#webHookNotificationsUrlEntry').val(),
         'web_hook_notifications_http_method': $('#webHookNotificationsHttpMethodSelect').val(),
@@ -2314,7 +2322,7 @@ function dict2CameraUi(dict) {
     $('#smtpTlsSwitch')[0].checked = dict['email_notifications_smtp_tls'];
     $('#emailPictureTimeSpanEntry').val(dict['email_notifications_picture_time_span']);
 
-    /* animation notification */
+    /* animation notifications */
     $('#emailAnimationNotificationsEnabledSwitch')[0].checked = dict['animation_email_enabled']; markHideIfNull('animation_email_enabled', 'emailAnimationNotificationsEnabledSwitch');
     $('#emailAnimationFromEntry').val(dict['animation_email_notifications_from']);
     $('#emailAnimationAddressesEntry').val(dict['animation_email_notifications_addresses']);
@@ -2323,6 +2331,13 @@ function dict2CameraUi(dict) {
     $('#smtpAnimationAccountEntry').val(dict['animation_email_notifications_smtp_account']);
     $('#smtpAnimationPasswordEntry').val(dict['animation_email_notifications_smtp_password']);
     $('#smtpAnimationTlsSwitch')[0].checked = dict['animation_email_notifications_smtp_tls'];
+
+    /* telegram notifications */
+    $('#telegramNotificationsEnabledSwitch')[0].checked = dict['telegram_enabled'];
+    $('#telegramMotionNotificationsEnabledSwitch')[0].checked = dict['telegram_motion_enabled'];
+    $('#telegramAnimationNotificationsEnabledSwitch')[0].checked = dict['telegram_animation_enabled'];
+    $('#telegramTokenEntry').val(dict['telegram_token']);
+    $('#telegramNameEntry').val(dict['telegram_name']);
 
     $('#webHookNotificationsEnabledSwitch')[0].checked = dict['web_hook_notifications_enabled']; markHideIfNull('web_hook_notifications_enabled', 'webHookNotificationsEnabledSwitch');
     $('#webHookNotificationsUrlEntry').val(dict['web_hook_notifications_url']);
@@ -2962,6 +2977,41 @@ function doTestEmail() {
         }
         else {
             showPopupMessage('Notification email succeeded!', 'info');
+        }
+    });
+}
+
+function doTestTelegram() {
+    var q = $('#telegramTokenEntry');
+    var valid = true;
+    q.each(function() {
+        this.validate();
+        if (this.invalid) {
+            valid = false;
+        }
+    });
+
+    if (!valid) {
+        return runAlertDialog('Make sure all the configuration options are valid!');
+    }
+
+    showModalDialog('<div class="modal-progress"></div>', null, null, true);
+
+    var data = {
+        what: 'telegram',
+        telegram_token: $('#telegramTokenEntry').val(),
+        telegram_name: $('#telegramNameEntry').val()
+    };
+
+    var cameraId = $('#cameraSelect').val();
+
+    ajax('POST', basePath + 'config/' + cameraId + '/test/', data, function (data) {
+        hideModalDialog(); /* progress */
+        if (data.error) {
+            showErrorMessage('Notification telegram failed: ' + data.error + '!');
+        }
+        else {
+            showPopupMessage('Notification telegram succeeded!', 'info');
         }
     });
 }

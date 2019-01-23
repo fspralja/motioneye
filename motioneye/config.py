@@ -812,7 +812,7 @@ def motion_camera_ui_to_dict(ui, old_config=None):
         'output_debug_pictures': ui['create_debug_media'],
         'ffmpeg_output_debug_movies': ui['create_debug_media'],
 
-        # animation notification
+        # animation notifications
         '@animation_email_enabled': ui['animation_email_enabled'],
         '@animation_email_notifications_from': ui['animation_email_notifications_from'],
         '@animation_email_notifications_addresses': ui['animation_email_notifications_addresses'],
@@ -821,6 +821,13 @@ def motion_camera_ui_to_dict(ui, old_config=None):
         '@animation_email_notifications_smtp_account': ui['animation_email_notifications_smtp_account'],
         '@animation_email_notifications_smtp_password': ui['animation_email_notifications_smtp_password'],
         '@animation_email_notifications_smtp_tls': ui['animation_email_notifications_smtp_tls'],
+
+        # telegram notifications
+        '@telegram_enabled': ui['telegram_enabled'],
+        '@telegram_motion_enabled': ui['telegram_motion_enabled'],
+        '@telegram_animation_enabled': ui['telegram_animation_enabled'],
+        '@telegram_token': ui['telegram_token'],
+        '@telegram_name': ui['telegram_name'],
 
         # working schedule
         '@working_schedule': '',
@@ -1018,7 +1025,7 @@ def motion_camera_ui_to_dict(ui, old_config=None):
     data['@animation_delay'] = ui['animation_delay']
     data['@animation_optimize'] = ui['animation_optimize']
 
-    # animation notification
+    # animation notifications
     data['@animation_email_enabled'] = ui['animation_email_enabled']
     data['@animation_email_notifications_from'] = ui['animation_email_notifications_from']
     data['@animation_email_notifications_addresses'] = ui['animation_email_notifications_addresses']
@@ -1027,6 +1034,13 @@ def motion_camera_ui_to_dict(ui, old_config=None):
     data['@animation_email_notifications_smtp_account'] = ui['animation_email_notifications_smtp_account']
     data['@animation_email_notifications_smtp_password'] = ui['animation_email_notifications_smtp_password']
     data['@animation_email_notifications_smtp_tls'] = ui['animation_email_notifications_smtp_tls']
+
+    # telegram notifications
+    data['@telegram_enabled'] = ui['telegram_enabled']
+    data['@telegram_motion_enabled'] = ui['telegram_motion_enabled']
+    data['@telegram_animation_enabled'] = ui['telegram_animation_enabled']
+    data['@telegram_token'] = ui['telegram_token']
+    data['@telegram_name'] = ui['telegram_name']
 
     if ui['despeckle_filter']:
         data['despeckle_filter'] = old_config['despeckle_filter'] or 'EedDl'
@@ -1253,7 +1267,7 @@ def motion_camera_dict_to_ui(data):
         'command_notifications_enabled': False,
         'command_end_notifications_enabled': False,
 
-        # animation notification
+        # animation notifications
         'animation_email_enabled': False,
         'animation_email_notifications_from': '',
         'animation_email_notifications_addresses': '',
@@ -1263,6 +1277,13 @@ def motion_camera_dict_to_ui(data):
         'animation_email_notifications_smtp_password': '',
         'animation_email_notifications_smtp_tls': True,
         
+        # telegram notifications
+        'telegram_enabled': False,
+        'telegram_motion_enabled': False,
+        'telegram_animation_enabled': False,
+        'telegram_token': '',
+        'telegram_name': '',
+
         # working schedule
         'working_schedule': False,
         'working_schedule_type': 'during',
@@ -1495,7 +1516,7 @@ def motion_camera_dict_to_ui(data):
     ui['animation_delay'] = data['@animation_delay']
     ui['animation_optimize'] = data['@animation_optimize']
 
-    # animation notification
+    # animation notifications
     ui['animation_email_enabled'] = data['@animation_email_enabled']
     ui['animation_email_notifications_from'] = data['@animation_email_notifications_from']
     ui['animation_email_notifications_addresses'] = data['@animation_email_notifications_addresses']
@@ -1504,6 +1525,13 @@ def motion_camera_dict_to_ui(data):
     ui['animation_email_notifications_smtp_account'] = data['@animation_email_notifications_smtp_account']
     ui['animation_email_notifications_smtp_password'] = data['@animation_email_notifications_smtp_password']
     ui['animation_email_notifications_smtp_tls'] = data['@animation_email_notifications_smtp_tls']
+
+    # telegram notifications
+    ui['telegram_enabled'] = data['@telegram_enabled']
+    ui['telegram_motion_enabled'] = data['@telegram_motion_enabled']
+    ui['telegram_animation_enabled'] = data['@telegram_animation_enabled']
+    ui['telegram_token'] = data['@telegram_token']
+    ui['telegram_name'] = data['@telegram_name']
 
     # working schedule
     working_schedule = data['@working_schedule']
@@ -2113,7 +2141,7 @@ def _set_default_motion_camera(camera_id, data):
     data.setdefault('@animation_delay', 10)
     data.setdefault('@animation_optimize', 1)
 
-    # animation notification
+    # animation notifications
     data.setdefault('@animation_email_enabled', False)
     data.setdefault('@animation_email_notifications_from', '')
     data.setdefault('@animation_email_notifications_addresses', '')
@@ -2122,6 +2150,13 @@ def _set_default_motion_camera(camera_id, data):
     data.setdefault('@animation_email_notifications_smtp_account', '')
     data.setdefault('@animation_email_notifications_smtp_password', '')
     data.setdefault('@animation_email_notifications_smtp_tls', True)
+
+    # telegram notifications
+    data.setdefault('@telegram_enabled', False)
+    data.setdefault('@telegram_motion_enabled', False)
+    data.setdefault('@telegram_animation_enabled', False)
+    data.setdefault('@telegram_token', '')
+    data.setdefault('@telegram_name', '')
 
     data.setdefault('@working_schedule', '')
     data.setdefault('@working_schedule_type', 'outside')

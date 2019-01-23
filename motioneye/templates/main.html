@@ -1035,22 +1035,13 @@
                         <td><span class="help-mark" title="click this button to test email notifications after you have filled in the required details">?</span></td>
                     </tr>
 
-
-                    <!--<tr class="settings-item advanced-setting" depends="emailNotificationsEnabled animationEnabled motionDetectionEnabled preserveMovies">
-                        <td colspan="100"><div class="settings-item-separator"></div></td>
-                    </tr>
-                    <tr class="settings-item advanced-setting" depends="emailNotificationsEnabled animationEnabled motionDetectionEnabled preserveMovies">
-                        <td class="settings-item-label"><span class="settings-item-label">Send email animation</span></td>
-                        <td class="settings-item-value"><input type="checkbox" class="styled notifications camera-config" id="animationEmailEnabledSwitch"></td>
-                        <td><span class="help-mark" title="enable this if you want to send email animations when movie finished creating, uses settings from upper send email section.">?</span></td>
-                    </tr>-->
                     <tr class="settings-item advanced-setting" depends="motionDetectionEnabled animationEnabled">
                         <td colspan="100"><div class="settings-item-separator"></div></td>
                     </tr>
                     <tr class="settings-item advanced-setting" depends="motionDetectionEnabled animationEnabled">
                         <td class="settings-item-label"><span class="settings-item-label">Send An Animation Email</span></td>
                         <td class="settings-item-value"><input type="checkbox" class="styled notifications camera-config" id="emailAnimationNotificationsEnabledSwitch"></td>
-                        <td><span class="help-mark" title="enable this if you want to receive an email whenever a motion event is detected">?</span></td>
+                        <td><span class="help-mark" title="enable this if you want to send email animations when movie finished creating">?</span></td>
                     </tr>
                     <tr class="settings-item advanced-setting" required="true" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">Email Addresses</span></td>
@@ -1087,13 +1078,45 @@
                         <td class="settings-item-value"><input type="checkbox" class="styled notifications camera-config" id="smtpAnimationTlsSwitch"></td>
                         <td><span class="help-mark" title="enable this if your SMTP server requires TLS (Gmail needs this to be enabled)">?</span></td>
                     </tr>
-                    <!--<tr class="settings-item advanced-setting" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled">
-                        <td class="settings-item-label"><span class="settings-item-label"></span></td>
-                        <td class="settings-item-value"><div class="button normal-button test-button" id="emailAnimationTestButton">Test Email</div></td>
-                        <td><span class="help-mark" title="click this button to test email notifications after you have filled in the required details">?</span></td>
-                    </tr>
 
-                    -->
+                    <tr class="settings-item advanced-setting" depends="motionDetectionEnabled">
+                        <td colspan="100"><div class="settings-item-separator"></div></td>
+                    </tr>
+                    <tr class="settings-item advanced-setting" depends="motionDetectionEnabled">
+                        <td class="settings-item-label"><span class="settings-item-label">Telegram messaging</span></td>
+                        <td class="settings-item-value"><input type="checkbox" class="styled notifications camera-config" id="telegramNotificationsEnabledSwitch"></td>
+                        <td><span class="help-mark" title="enable this if you want to receive an telegram messages">?</span></td>
+                    </tr>
+                    <tr class="settings-item advanced-setting" depends="telegramNotificationsEnabled motionDetectionEnabled">
+                        <td class="settings-item-label"><span class="settings-item-label"></span></td>
+                        <td class="settings-item-value"><div class="button normal-button test-button" id="telegramGuideButton" onclick="window.open('https://core.telegram.org/bots#', '_blank');">Setup guide</div></td>
+                        <td><span class="help-mark" title="open this to see official telegram bot setup guide">?</span></td>
+                    </tr>
+                    <tr class="settings-item advanced-setting" required="true" depends="telegramNotificationsEnabled motionDetectionEnabled" strip="true">
+                        <td class="settings-item-label"><span class="settings-item-label">Telegram token</span></td>
+                        <td class="settings-item-value"><input type="text" class="styled notifications camera-config" id="telegramTokenEntry" placeholder="e.g. XXXXXXXXX:YYYYYYYY..."></td>
+                        <td><span class="help-mark" title="enter the telegram bot token">?</span></td>
+                    </tr>
+                    <tr class="settings-item advanced-setting" required="false" depends="telegramNotificationsEnabled motionDetectionEnabled" strip="true">
+                        <td class="settings-item-label"><span class="settings-item-label">Group/bot name</span></td>
+                        <td class="settings-item-value"><input type="text" class="styled notifications camera-config" id="telegramNameEntry" placeholder="e.g. motionEye"></td>
+                        <td><span class="help-mark" title="enter the telegram group name without @ prefix or leave empty to send to the bot channel">?</span></td>
+                    </tr>
+                    <tr class="settings-item advanced-setting" depends="telegramNotificationsEnabled motionDetectionEnabled">
+                        <td class="settings-item-label"><span class="settings-item-label">Send motion event message</span></td>
+                        <td class="settings-item-value"><input type="checkbox" class="styled notifications camera-config" id="telegramMotionNotificationsEnabledSwitch"></td>
+                        <td><span class="help-mark" title="enable this if you want to receive an telegram messages whenever a motion was detected">?</span></td>
+                    </tr>
+                    <tr class="settings-item advanced-setting" depends="telegramNotificationsEnabled motionDetectionEnabled animationEnabled">
+                        <td class="settings-item-label"><span class="settings-item-label">Send animation message</span></td>
+                        <td class="settings-item-value"><input type="checkbox" class="styled notifications camera-config" id="telegramAnimationNotificationsEnabledSwitch"></td>
+                        <td><span class="help-mark" title="enable this if you want to receive an telegram messages whenever a movie animation was created">?</span></td>
+                    </tr>
+                    <tr class="settings-item advanced-setting" depends="telegramNotificationsEnabled motionDetectionEnabled">
+                        <td class="settings-item-label"><span class="settings-item-label"></span></td>
+                        <td class="settings-item-value"><div class="button normal-button test-button" id="telegramTestButton">Test Telegram</div></td>
+                        <td><span class="help-mark" title="click this button to test telegram message after you have filled in the required details">?</span></td>
+                    </tr>
 
                     <tr class="settings-item advanced-setting" depends="motionDetectionEnabled">
                         <td colspan="100"><div class="settings-item-separator"></div></td>
