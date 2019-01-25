@@ -482,6 +482,9 @@ def set_camera(camera_id, camera_config):
     elif utils.is_simple_mjpeg_camera(camera_config):
         _set_additional_config(camera_config, camera_id=camera_id)
 
+    import notifications
+    notifications.config_changed()
+
     # read the actual configuration from file
     config_file_path = os.path.join(settings.CONF_PATH, _CAMERA_CONFIG_FILE_NAME) % {'id': camera_id}
     if os.path.isfile(config_file_path):
@@ -832,6 +835,10 @@ def motion_camera_ui_to_dict(ui, old_config=None):
         # working schedule
         '@working_schedule': '',
 
+        # geofencing
+        '@geofence_enabled': ui['geofence_enabled'],
+        '@geofence_ips': ui['geofence_ips'],
+
         # events
         'on_event_start': '',
         'on_event_end': '',
@@ -1073,6 +1080,10 @@ def motion_camera_ui_to_dict(ui, old_config=None):
 
         data['@working_schedule_type'] = ui['working_schedule_type']
 
+        # geofencing
+        data['@geofence_enabled'] = ui['geofence_enabled']
+        data['@geofence_ips'] = ui['geofence_ips']
+
     # event start
     on_event_start = ['%(script)s start %%t' % {'script': meyectl.find_command('relayevent')}]
     if ui['email_notifications_enabled']:
@@ -1293,7 +1304,11 @@ def motion_camera_dict_to_ui(data):
         'thursday_from': '', 'thursday_to': '',
         'friday_from': '', 'friday_to': '',
         'saturday_from': '', 'saturday_to': '',
-        'sunday_from': '', 'sunday_to': ''
+        'sunday_from': '', 'sunday_to': '',
+
+        # geofencing
+        'geofence_enabled': False,
+        'geofence_ips': ''
     }
 
     if utils.is_net_camera(data):
@@ -1546,6 +1561,10 @@ def motion_camera_dict_to_ui(data):
         ui['saturday_from'], ui['saturday_to'] = days[5].split('-')
         ui['sunday_from'], ui['sunday_to'] = days[6].split('-')
         ui['working_schedule_type'] = data['@working_schedule_type']
+
+    # geofencing
+    ui['geofence_enabled'] = data['@geofence_enabled']
+    ui['geofence_ips'] = data['@geofence_ips']
 
     # event start
     on_event_start = data.get('on_event_start') or []
@@ -2158,6 +2177,7 @@ def _set_default_motion_camera(camera_id, data):
     data.setdefault('@telegram_token', '')
     data.setdefault('@telegram_name', '')
 
+    # working schedule
     data.setdefault('@working_schedule', '')
     data.setdefault('@working_schedule_type', 'outside')
 
@@ -2165,6 +2185,10 @@ def _set_default_motion_camera(camera_id, data):
     data.setdefault('on_event_end', '')
     data.setdefault('on_movie_end', '')
     data.setdefault('on_picture_save', '')
+
+    # telegram notifications
+    data.setdefault('@geofence_enabled', False)
+    data.setdefault('@geofence_ips', '')
 
 
 def _set_default_simple_mjpeg_camera(camera_id, data):

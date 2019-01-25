@@ -462,8 +462,6 @@ class ConfigHandler(BaseHandler):
         error = [None]
         
         def finish():
-            import notifications
-            notifications.config_changed()
             if reboot[0]:
                 if settings.ENABLE_REBOOT:
                     def call_reboot():

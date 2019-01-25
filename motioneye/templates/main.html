@@ -1255,6 +1255,22 @@
                         </td>
                         <td><span class="help-mark" title="sets whether motion detection should be active during or outside the working schedule">?</span></td>
                     </tr>
+
+                    <!-- Geofence -->
+                    <tr class="settings-item advanced-setting" depends="motionDetectionEnabled">
+                        <td colspan="100"><div class="settings-item-separator"></div></td>
+                    </tr>
+                    <tr class="settings-item advanced-setting" depends="motionDetectionEnabled">
+                        <td class="settings-item-label"><span class="settings-item-label">Geofencing</span></td>
+                        <td class="settings-item-value"><input type="checkbox" class="styled notifications camera-config" id="geofenceEnabledSwitch"></td>
+                        <td><span class="help-mark" title="enable this if you want to stop notifications when specified devices are on same network, works in conjunction with working schedule">?</span></td>
+                    </tr>
+                    <tr class="settings-item advanced-setting" required="true" depends="geofenceEnabled motionDetectionEnabled" strip="true">
+                        <td class="settings-item-label"><span class="settings-item-label">Device IP's</span></td>
+                        <td class="settings-item-value"><input type="text" class="styled notifications camera-config" id="geofenceIpsEntry" placeholder="192.168.0.18, ..."></td>
+                        <td><span class="help-mark" title="comma separated list of IP's to check">?</span></td>
+                    </tr>
+
                     {% for config in camera_sections.get('working-schedule', {}).get('configs', []) %}
                         {{config_item(config, "motionDetectionEnabled")}}
                     {% endfor %}

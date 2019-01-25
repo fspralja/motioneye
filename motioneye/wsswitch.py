@@ -18,6 +18,9 @@
 import datetime
 import functools
 import logging
+import subprocess
+import os
+import socket
 
 from tornado.ioloop import IOLoop
 
@@ -107,16 +110,38 @@ def _check_ws():
         working_schedule = camera_config.get('@working_schedule')
         motion_detection = camera_config.get('@motion_detection')
         working_schedule_type = camera_config.get('@working_schedule_type') or 'outside'
+
+        geofence_enabled = camera_config.get('@geofence_enabled')
+        ips = camera_config.get('@geofence_ips')
         
         if not working_schedule:  # working schedule disabled, motion detection left untouched
             continue
         
         if not motion_detection:  # motion detection explicitly disabled
             continue
-        
-        now_during = _during_working_schedule(now, working_schedule)
-        must_be_enabled = ((now_during and working_schedule_type == 'during') or
-                           (not now_during and working_schedule_type == 'outside'))
-        
+
+        must_be_enabled = True
+
+        now_during = True
+        if working_schedule:
+            now_during = _during_working_schedule(now, working_schedule)
+
+        if geofence_enabled and (now_during or working_schedule_type == 'outside'):
+            for ip in ips.split(','):
+                try:
+                    ip = ip.strip()
+                    socket.inet_aton(ip)
+                except socket.error as e:
+                    logging.warning('geofence ip error: \'%s\' msg: %s' % (ip, e.message))
+                    continue
+
+                try:
+                    subprocess.check_call(['ping', '-c1', ip], stdout=open(os.devnull, 'w'))
+                    must_be_enabled = False
+                    break
+                except:
+                    pass
+
         motionctl.get_motion_detection(camera_id, functools.partial(
                 on_motion_detection_status, camera_id, must_be_enabled, working_schedule_type))
+

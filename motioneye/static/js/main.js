@@ -1975,7 +1975,11 @@ function cameraUi2Dict() {
         'saturday_to': $('#saturdayEnabledSwitch')[0].checked ? $('#saturdayToEntry').val() : '',
         'sunday_from': $('#sundayEnabledSwitch')[0].checked ? $('#sundayFromEntry').val() : '',
         'sunday_to': $('#sundayEnabledSwitch')[0].checked ? $('#sundayToEntry').val() : '',
-        'working_schedule_type': $('#workingScheduleTypeSelect').val()
+        'working_schedule_type': $('#workingScheduleTypeSelect').val(),
+
+        /* geofencing */
+        'geofence_enabled': $('#geofenceEnabledSwitch')[0].checked,
+        'geofence_ips': $('#geofenceIpsEntry').val()
     };
     
     /* if all working schedule days are disabled,
@@ -2378,6 +2382,10 @@ function dict2CameraUi(dict) {
     $('#sundayFromEntry').val(dict['sunday_from']); markHideIfNull('sunday_from', 'sundayFromEntry');
     $('#sundayToEntry').val(dict['sunday_to']); markHideIfNull('sunday_to', 'sundayToEntry');
     $('#workingScheduleTypeSelect').val(dict['working_schedule_type']); markHideIfNull('working_schedule_type', 'workingScheduleTypeSelect');
+
+    /* geofencing */
+    $('#geofenceEnabledSwitch')[0].checked = dict['geofence_enabled'];
+    $('#geofenceIpsEntry').val(dict['geofence_ips']);
     
     /* additional sections */
     $('input[type=checkbox].additional-section.main-config').each(function () {
