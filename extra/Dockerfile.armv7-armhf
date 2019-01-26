@@ -19,6 +19,7 @@ RUN apt-get --quiet update && \
     apt-get --quiet upgrade --yes && \
     DEBIAN_FRONTEND="noninteractive" apt-get --quiet --yes --option Dpkg::Options::="--force-confnew" --no-install-recommends install \
     curl \
+    iputils-ping \
     ffmpeg \
     gifsicle \
     git \
