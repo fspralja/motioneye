@@ -126,7 +126,7 @@ def _check_ws():
         if working_schedule:
             now_during = _during_working_schedule(now, working_schedule)
 
-        if geofence_enabled and (now_during or working_schedule_type == 'outside'):
+        if geofence_enabled and (now_during or working_schedule_type != 'outside'):
             for ip in ips.split(','):
                 try:
                     ip = ip.strip()
