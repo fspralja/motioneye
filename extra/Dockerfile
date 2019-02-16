@@ -60,3 +60,4 @@ CMD test -e /etc/motioneye/motioneye.conf || \
     /usr/local/bin/meyectl startserver -c /etc/motioneye/motioneye.conf
 
 EXPOSE 8765
+EXPOSE 8766
