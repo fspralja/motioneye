@@ -51,6 +51,11 @@ LISTEN = '0.0.0.0'
 # the TCP port to listen on
 PORT = 8765
 
+# use ssl, 0 for disabled
+SSL_PORT = 0
+SSL_CERT = '/etc/motioneye/cert.pem'
+SSL_KEY = '/etc/motioneye/key.pem'
+
 # path to the motion binary to use (automatically detected by default)
 MOTION_BINARY = None
 

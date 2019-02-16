@@ -401,8 +401,15 @@ def run():
     application = Application(handler_mapping, debug=False, log_function=_log_request,
                               static_path=settings.STATIC_PATH, static_url_prefix='/static/')
     
+    if settings.SSL_PORT > 0:
+        application.listen(settings.SSL_PORT, settings.LISTEN, ssl_options={
+            "certfile": settings.SSL_CERT,
+            "keyfile": settings.SSL_KEY,
+        })
+        logging.info('https server started on port: %s' % settings.SSL_PORT)
+
     application.listen(settings.PORT, settings.LISTEN)
-    logging.info('server started')
+    logging.info('http server started ono port: %s' % settings.PORT)
     
     io_loop = IOLoop.instance()
     # we need to reset the loop's PID to fix PID checks when running in daemon mode
