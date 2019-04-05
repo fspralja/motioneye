@@ -930,6 +930,7 @@ function initUI() {
     /* test buttons */
     $('div#uploadTestButton').click(doTestUpload);
     $('div#emailTestButton').click(doTestEmail);
+    $('div#telegramTestButton').click(doTestTelegram);
     $('div#networkShareTestButton').click(doTestNetworkShare);
     
     /* mask editor buttons */
@@ -1897,6 +1898,13 @@ function cameraUi2Dict() {
         'max_movie_length': $('#maxMovieLengthEntry').val(),
         'preserve_movies': $('#preserveMoviesSelect').val() >= 0 ? $('#preserveMoviesSelect').val() : $('#moviesLifetimeEntry').val(),
         
+        /* animation */
+        'animation_enabled': $('#animationEnabledSwitch')[0].checked,
+        'animation_resolution': $('#animationResolutionEntry').val(),
+        'animation_framerate': $('#animationFramerateEntry').val(),
+        'animation_delay': $('#animationDelayEntry').val(),
+        'animation_optimize': $('#animationOptimizeSelect').val(),
+
         /* motion detection */
         'motion_detection': $('#motionDetectionEnabledSwitch')[0].checked,
         'frame_change_threshold': $('#frameChangeThresholdSlider').val(),
@@ -1925,6 +1933,24 @@ function cameraUi2Dict() {
         'email_notifications_smtp_password': $('#smtpPasswordEntry').val(),
         'email_notifications_smtp_tls': $('#smtpTlsSwitch')[0].checked,
         'email_notifications_picture_time_span': $('#emailPictureTimeSpanEntry').val(),
+
+        /* animation notifications */
+        'animation_email_enabled': $('#emailAnimationNotificationsEnabledSwitch')[0].checked,
+        'animation_email_notifications_from': $('#emailAnimationFromEntry').val(),
+        'animation_email_notifications_addresses': $('#emailAnimationAddressesEntry').val(),
+        'animation_email_notifications_smtp_server': $('#smtpAnimationServerEntry').val(),
+        'animation_email_notifications_smtp_port': $('#smtpAnimationPortEntry').val(),
+        'animation_email_notifications_smtp_account': $('#smtpAnimationAccountEntry').val(),
+        'animation_email_notifications_smtp_password': $('#smtpAnimationPasswordEntry').val(),
+        'animation_email_notifications_smtp_tls': $('#smtpAnimationTlsSwitch')[0].checked,
+
+        /* telegram notifications */
+        'telegram_enabled': $('#telegramNotificationsEnabledSwitch')[0].checked,
+        'telegram_motion_enabled': $('#telegramMotionNotificationsEnabledSwitch')[0].checked,
+        'telegram_animation_enabled': $('#telegramAnimationNotificationsEnabledSwitch')[0].checked,
+        'telegram_token': $('#telegramTokenEntry').val(),
+        'telegram_name': $('#telegramNameEntry').val(),
+
         'web_hook_notifications_enabled': $('#webHookNotificationsEnabledSwitch')[0].checked,
         'web_hook_notifications_url': $('#webHookNotificationsUrlEntry').val(),
         'web_hook_notifications_http_method': $('#webHookNotificationsHttpMethodSelect').val(),
@@ -1949,7 +1975,11 @@ function cameraUi2Dict() {
         'saturday_to': $('#saturdayEnabledSwitch')[0].checked ? $('#saturdayToEntry').val() : '',
         'sunday_from': $('#sundayEnabledSwitch')[0].checked ? $('#sundayFromEntry').val() : '',
         'sunday_to': $('#sundayEnabledSwitch')[0].checked ? $('#sundayToEntry').val() : '',
-        'working_schedule_type': $('#workingScheduleTypeSelect').val()
+        'working_schedule_type': $('#workingScheduleTypeSelect').val(),
+
+        /* geofencing */
+        'geofence_enabled': $('#geofenceEnabledSwitch')[0].checked,
+        'geofence_ips': $('#geofenceIpsEntry').val()
     };
     
     /* if all working schedule days are disabled,
@@ -2260,6 +2290,13 @@ function dict2CameraUi(dict) {
     markHideIfNull('preserve_movies', 'preserveMoviesSelect');
     $('#moviesLifetimeEntry').val(dict['preserve_movies']); markHideIfNull('preserve_movies', 'moviesLifetimeEntry');
     
+    /* animation */
+    $('#animationEnabledSwitch')[0].checked = dict['animation_enabled']; markHideIfNull('animation_enabled', 'animationEnabledSwitch');
+    $('#animationResolutionEntry').val(dict['animation_resolution']); markHideIfNull('animation_resolution', 'animationResolutionEntry');
+    $('#animationFramerateEntry').val(dict['animation_framerate']); markHideIfNull('animation_framerate', 'animationFramerateEntry');
+    $('#animationDelayEntry').val(dict['animation_delay']); markHideIfNull('animation_delay', 'animationDelayEntry');
+    $('#animationOptimizeSelect').val(dict['animation_optimize']);
+
     /* motion detection */
     $('#motionDetectionEnabledSwitch')[0].checked = dict['motion_detection']; markHideIfNull('motion_detection', 'motionDetectionEnabledSwitch');
     $('#frameChangeThresholdSlider').val(dict['frame_change_threshold']); markHideIfNull('frame_change_threshold', 'frameChangeThresholdSlider');
@@ -2288,7 +2325,24 @@ function dict2CameraUi(dict) {
     $('#smtpPasswordEntry').val(dict['email_notifications_smtp_password']);
     $('#smtpTlsSwitch')[0].checked = dict['email_notifications_smtp_tls'];
     $('#emailPictureTimeSpanEntry').val(dict['email_notifications_picture_time_span']);
-    
+
+    /* animation notifications */
+    $('#emailAnimationNotificationsEnabledSwitch')[0].checked = dict['animation_email_enabled']; markHideIfNull('animation_email_enabled', 'emailAnimationNotificationsEnabledSwitch');
+    $('#emailAnimationFromEntry').val(dict['animation_email_notifications_from']);
+    $('#emailAnimationAddressesEntry').val(dict['animation_email_notifications_addresses']);
+    $('#smtpAnimationServerEntry').val(dict['animation_email_notifications_smtp_server']);
+    $('#smtpAnimationPortEntry').val(dict['animation_email_notifications_smtp_port']);
+    $('#smtpAnimationAccountEntry').val(dict['animation_email_notifications_smtp_account']);
+    $('#smtpAnimationPasswordEntry').val(dict['animation_email_notifications_smtp_password']);
+    $('#smtpAnimationTlsSwitch')[0].checked = dict['animation_email_notifications_smtp_tls'];
+
+    /* telegram notifications */
+    $('#telegramNotificationsEnabledSwitch')[0].checked = dict['telegram_enabled'];
+    $('#telegramMotionNotificationsEnabledSwitch')[0].checked = dict['telegram_motion_enabled'];
+    $('#telegramAnimationNotificationsEnabledSwitch')[0].checked = dict['telegram_animation_enabled'];
+    $('#telegramTokenEntry').val(dict['telegram_token']);
+    $('#telegramNameEntry').val(dict['telegram_name']);
+
     $('#webHookNotificationsEnabledSwitch')[0].checked = dict['web_hook_notifications_enabled']; markHideIfNull('web_hook_notifications_enabled', 'webHookNotificationsEnabledSwitch');
     $('#webHookNotificationsUrlEntry').val(dict['web_hook_notifications_url']);
     $('#webHookNotificationsHttpMethodSelect').val(dict['web_hook_notifications_http_method']);
@@ -2328,6 +2382,10 @@ function dict2CameraUi(dict) {
     $('#sundayFromEntry').val(dict['sunday_from']); markHideIfNull('sunday_from', 'sundayFromEntry');
     $('#sundayToEntry').val(dict['sunday_to']); markHideIfNull('sunday_to', 'sundayToEntry');
     $('#workingScheduleTypeSelect').val(dict['working_schedule_type']); markHideIfNull('working_schedule_type', 'workingScheduleTypeSelect');
+
+    /* geofencing */
+    $('#geofenceEnabledSwitch')[0].checked = dict['geofence_enabled'];
+    $('#geofenceIpsEntry').val(dict['geofence_ips']);
     
     /* additional sections */
     $('input[type=checkbox].additional-section.main-config').each(function () {
@@ -2927,6 +2985,41 @@ function doTestEmail() {
         }
         else {
             showPopupMessage('Notification email succeeded!', 'info');
+        }
+    });
+}
+
+function doTestTelegram() {
+    var q = $('#telegramTokenEntry');
+    var valid = true;
+    q.each(function() {
+        this.validate();
+        if (this.invalid) {
+            valid = false;
+        }
+    });
+
+    if (!valid) {
+        return runAlertDialog('Make sure all the configuration options are valid!');
+    }
+
+    showModalDialog('<div class="modal-progress"></div>', null, null, true);
+
+    var data = {
+        what: 'telegram',
+        telegram_token: $('#telegramTokenEntry').val(),
+        telegram_name: $('#telegramNameEntry').val()
+    };
+
+    var cameraId = $('#cameraSelect').val();
+
+    ajax('POST', basePath + 'config/' + cameraId + '/test/', data, function (data) {
+        hideModalDialog(); /* progress */
+        if (data.error) {
+            showErrorMessage('Notification telegram failed: ' + data.error + '!');
+        }
+        else {
+            showPopupMessage('Notification telegram succeeded!', 'info');
         }
     });
 }

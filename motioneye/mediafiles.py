@@ -86,6 +86,7 @@ _timelapse_data = None
 
 _ffmpeg_binary_cache = None
 
+_gifsicle_binary_cache = None
 
 def findfiles(path):
     files = []
@@ -258,6 +259,36 @@ def find_ffmpeg():
     return _ffmpeg_binary_cache
 
 
+def find_gifsicle():
+    global _gifsicle_binary_cache
+    if _gifsicle_binary_cache:
+        return _gifsicle_binary_cache
+
+    # binary
+    try:
+        binary = subprocess.check_output(['which', 'gifsicle'], stderr=utils.DEV_NULL).strip()
+
+    except subprocess.CalledProcessError:  # not found
+        return None, None
+
+    # version
+    try:
+        output = subprocess.check_output(binary + ' --version', shell=True)
+
+    except subprocess.CalledProcessError as e:
+        logging.error('gifsicle: could find version: %s' % e)
+        return None, None
+
+    result = re.findall('gifsicle (.+)', output, re.IGNORECASE)
+    version = result and result[0] or ''
+
+    logging.debug('using gifsicle version %s' % version)
+
+    _gifsicle_binary_cache = (binary, version)
+
+    return _gifsicle_binary_cache
+
+
 def cleanup_media(media_type):
     logging.debug('cleaning up %(media_type)ss...' % {'media_type': media_type})
     
@@ -265,7 +296,7 @@ def cleanup_media(media_type):
         exts = _PICTURE_EXTS
         
     else:  # media_type == 'movie'
-        exts = _MOVIE_EXTS + ['.thumb']
+        exts = _MOVIE_EXTS + ['.thumb'] + ['.gif']
 
     for camera_id in config.get_camera_ids():
         camera_config = config.get_camera(camera_id)
@@ -361,6 +392,53 @@ def make_movie_preview(camera_config, full_path):
         return None
 
     return thumb_path
+
+
+def make_animation(camera_config, full_path):
+    anim_path = full_path[:-4] + '.gif'
+
+    logging.debug('creating animation for %(path)s...' % {'path': full_path})
+
+    cmd1 = 'ffmpeg -i %(path)s -vf scale=%(resolution)s:-1 -r %(rate)s -f image2pipe -vcodec gif -'
+    cmd2 = 'gifsicle --delay=%(delay)s --optimize=%(optimize)s --multifile --loop --output %(anim)s'
+
+    actual_cmd1 = cmd1 % {'path': pipes.quote(full_path), 'resolution': camera_config['@animation_resolution'], 'rate': camera_config['@animation_framerate']}
+    actual_cmd2 = cmd2 % {'delay': camera_config['@animation_delay'], 'optimize': camera_config['@animation_optimize'], 'anim': anim_path}
+    logging.debug('running command "%s | %s"' % (actual_cmd1, actual_cmd2))
+
+    try:
+        ps = subprocess.Popen(actual_cmd1.split(), stdout=subprocess.PIPE)
+        subprocess.check_output(actual_cmd2.split(), stdin=ps.stdout)
+        ps.wait()
+
+    except subprocess.CalledProcessError as e:
+        logging.error('failed to create animation for %(path)s: %(msg)s' % {
+            'path': full_path, 'msg': unicode(e)})
+        return None
+
+    try:
+        st = os.stat(anim_path)
+
+    except os.error:
+        logging.error('failed to create animation for %(path)s' % {'path': full_path})
+
+        return None
+
+    if st.st_size == 0:
+        logging.error('failed to create animation for %(path)s' % {'path': full_path})
+        try:
+            os.remove(anim_path)
+
+        except:
+            pass
+
+        return None
+
+    # animation notification
+    import notifications
+    notifications.queue_animation(camera_config, anim_path)
+
+    return anim_path
 
 
 def list_media(camera_config, media_type, callback, prefix=None):

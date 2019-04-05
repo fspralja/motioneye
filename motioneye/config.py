@@ -482,6 +482,9 @@ def set_camera(camera_id, camera_config):
     elif utils.is_simple_mjpeg_camera(camera_config):
         _set_additional_config(camera_config, camera_id=camera_id)
 
+    import notifications
+    notifications.config_changed()
+
     # read the actual configuration from file
     config_file_path = os.path.join(settings.CONF_PATH, _CAMERA_CONFIG_FILE_NAME) % {'id': camera_id}
     if os.path.isfile(config_file_path):
@@ -788,6 +791,13 @@ def motion_camera_ui_to_dict(ui, old_config=None):
         'max_movie_time': ui['max_movie_length'],
         '@preserve_movies': int(ui['preserve_movies']),
 
+        # animation
+        '@animation_enabled':  ui['animation_enabled'],
+        '@animation_resolution':  int(ui['animation_resolution']),
+        '@animation_framerate':  int(ui['animation_framerate']),
+        '@animation_delay':  int(ui['animation_delay']),
+        '@animation_optimize':  int(ui['animation_optimize']),
+
         # motion detection
         '@motion_detection': ui['motion_detection'],
         'emulate_motion': False,
@@ -805,8 +815,29 @@ def motion_camera_ui_to_dict(ui, old_config=None):
         'output_debug_pictures': ui['create_debug_media'],
         'ffmpeg_output_debug_movies': ui['create_debug_media'],
 
+        # animation notifications
+        '@animation_email_enabled': ui['animation_email_enabled'],
+        '@animation_email_notifications_from': ui['animation_email_notifications_from'],
+        '@animation_email_notifications_addresses': ui['animation_email_notifications_addresses'],
+        '@animation_email_notifications_smtp_server': ui['animation_email_notifications_smtp_server'],
+        '@animation_email_notifications_smtp_port': int(ui['animation_email_notifications_smtp_port']),
+        '@animation_email_notifications_smtp_account': ui['animation_email_notifications_smtp_account'],
+        '@animation_email_notifications_smtp_password': ui['animation_email_notifications_smtp_password'],
+        '@animation_email_notifications_smtp_tls': ui['animation_email_notifications_smtp_tls'],
+
+        # telegram notifications
+        '@telegram_enabled': ui['telegram_enabled'],
+        '@telegram_motion_enabled': ui['telegram_motion_enabled'],
+        '@telegram_animation_enabled': ui['telegram_animation_enabled'],
+        '@telegram_token': ui['telegram_token'],
+        '@telegram_name': ui['telegram_name'],
+
         # working schedule
         '@working_schedule': '',
+
+        # geofencing
+        '@geofence_enabled': ui['geofence_enabled'],
+        '@geofence_ips': ui['geofence_ips'],
 
         # events
         'on_event_start': '',
@@ -994,7 +1025,29 @@ def motion_camera_ui_to_dict(ui, old_config=None):
 
     data['ffmpeg_variable_bitrate'] = int(vbr)
 
-    # motion detection
+    # animation
+    data['@animation_enabled'] = ui['animation_enabled']
+    data['@animation_resolution'] = ui['animation_resolution']
+    data['@animation_framerate'] = ui['animation_framerate']
+    data['@animation_delay'] = ui['animation_delay']
+    data['@animation_optimize'] = ui['animation_optimize']
+
+    # animation notifications
+    data['@animation_email_enabled'] = ui['animation_email_enabled']
+    data['@animation_email_notifications_from'] = ui['animation_email_notifications_from']
+    data['@animation_email_notifications_addresses'] = ui['animation_email_notifications_addresses']
+    data['@animation_email_notifications_smtp_server'] = ui['animation_email_notifications_smtp_server']
+    data['@animation_email_notifications_smtp_port'] = ui['animation_email_notifications_smtp_port']
+    data['@animation_email_notifications_smtp_account'] = ui['animation_email_notifications_smtp_account']
+    data['@animation_email_notifications_smtp_password'] = ui['animation_email_notifications_smtp_password']
+    data['@animation_email_notifications_smtp_tls'] = ui['animation_email_notifications_smtp_tls']
+
+    # telegram notifications
+    data['@telegram_enabled'] = ui['telegram_enabled']
+    data['@telegram_motion_enabled'] = ui['telegram_motion_enabled']
+    data['@telegram_animation_enabled'] = ui['telegram_animation_enabled']
+    data['@telegram_token'] = ui['telegram_token']
+    data['@telegram_name'] = ui['telegram_name']
 
     if ui['despeckle_filter']:
         data['despeckle_filter'] = old_config['despeckle_filter'] or 'EedDl'
@@ -1026,6 +1079,10 @@ def motion_camera_ui_to_dict(ui, old_config=None):
             ui['sunday_from'] + '-' + ui['sunday_to'])
 
         data['@working_schedule_type'] = ui['working_schedule_type']
+
+        # geofencing
+        data['@geofence_enabled'] = ui['geofence_enabled']
+        data['@geofence_ips'] = ui['geofence_ips']
 
     # event start
     on_event_start = ['%(script)s start %%t' % {'script': meyectl.find_command('relayevent')}]
@@ -1191,6 +1248,13 @@ def motion_camera_dict_to_ui(data):
         'max_movie_length': data['max_movie_time'],
         'preserve_movies': data['@preserve_movies'],
 
+        # animation
+        'animation_enabled': False,
+        'animation_resolution': 480,
+        'animation_framerate': 1,
+        'animation_delay': 10,
+        'animation_optimize': 1,
+
         # motion detection
         'motion_detection': data['@motion_detection'],
         'show_frame_changes': data['text_changes'] or data['locate_motion_mode'],
@@ -1213,7 +1277,24 @@ def motion_camera_dict_to_ui(data):
         'web_hook_notifications_enabled': False,
         'command_notifications_enabled': False,
         'command_end_notifications_enabled': False,
+
+        # animation notifications
+        'animation_email_enabled': False,
+        'animation_email_notifications_from': '',
+        'animation_email_notifications_addresses': '',
+        'animation_email_notifications_smtp_server': '',
+        'animation_email_notifications_smtp_port': 587,
+        'animation_email_notifications_smtp_account': '',
+        'animation_email_notifications_smtp_password': '',
+        'animation_email_notifications_smtp_tls': True,
         
+        # telegram notifications
+        'telegram_enabled': False,
+        'telegram_motion_enabled': False,
+        'telegram_animation_enabled': False,
+        'telegram_token': '',
+        'telegram_name': '',
+
         # working schedule
         'working_schedule': False,
         'working_schedule_type': 'during',
@@ -1223,7 +1304,11 @@ def motion_camera_dict_to_ui(data):
         'thursday_from': '', 'thursday_to': '',
         'friday_from': '', 'friday_to': '',
         'saturday_from': '', 'saturday_to': '',
-        'sunday_from': '', 'sunday_to': ''
+        'sunday_from': '', 'sunday_to': '',
+
+        # geofencing
+        'geofence_enabled': False,
+        'geofence_ips': ''
     }
 
     if utils.is_net_camera(data):
@@ -1439,6 +1524,30 @@ def motion_camera_dict_to_ui(data):
         ui['mask_type'] = 'smart'
         ui['smart_mask_sluggishness'] = 10 - data['smart_mask_speed']
 
+    # animation
+    ui['animation_enabled'] = data['@animation_enabled'] == True
+    ui['animation_resolution'] = data['@animation_resolution']
+    ui['animation_framerate'] = data['@animation_framerate']
+    ui['animation_delay'] = data['@animation_delay']
+    ui['animation_optimize'] = data['@animation_optimize']
+
+    # animation notifications
+    ui['animation_email_enabled'] = data['@animation_email_enabled']
+    ui['animation_email_notifications_from'] = data['@animation_email_notifications_from']
+    ui['animation_email_notifications_addresses'] = data['@animation_email_notifications_addresses']
+    ui['animation_email_notifications_smtp_server'] = data['@animation_email_notifications_smtp_server']
+    ui['animation_email_notifications_smtp_port'] = data['@animation_email_notifications_smtp_port']
+    ui['animation_email_notifications_smtp_account'] = data['@animation_email_notifications_smtp_account']
+    ui['animation_email_notifications_smtp_password'] = data['@animation_email_notifications_smtp_password']
+    ui['animation_email_notifications_smtp_tls'] = data['@animation_email_notifications_smtp_tls']
+
+    # telegram notifications
+    ui['telegram_enabled'] = data['@telegram_enabled']
+    ui['telegram_motion_enabled'] = data['@telegram_motion_enabled']
+    ui['telegram_animation_enabled'] = data['@telegram_animation_enabled']
+    ui['telegram_token'] = data['@telegram_token']
+    ui['telegram_name'] = data['@telegram_name']
+
     # working schedule
     working_schedule = data['@working_schedule']
     if working_schedule:
@@ -1452,6 +1561,10 @@ def motion_camera_dict_to_ui(data):
         ui['saturday_from'], ui['saturday_to'] = days[5].split('-')
         ui['sunday_from'], ui['sunday_to'] = days[6].split('-')
         ui['working_schedule_type'] = data['@working_schedule_type']
+
+    # geofencing
+    ui['geofence_enabled'] = data['@geofence_enabled']
+    ui['geofence_ips'] = data['@geofence_ips']
 
     # event start
     on_event_start = data.get('on_event_start') or []
@@ -2040,6 +2153,31 @@ def _set_default_motion_camera(camera_id, data):
     data.setdefault('@preserve_movies', 0)
     data.setdefault('@manual_record', False)
 
+    # animation defaults
+    data.setdefault('@animation_enabled', False)
+    data.setdefault('@animation_resolution', 480)
+    data.setdefault('@animation_framerate', 1)
+    data.setdefault('@animation_delay', 10)
+    data.setdefault('@animation_optimize', 1)
+
+    # animation notifications
+    data.setdefault('@animation_email_enabled', False)
+    data.setdefault('@animation_email_notifications_from', '')
+    data.setdefault('@animation_email_notifications_addresses', '')
+    data.setdefault('@animation_email_notifications_smtp_server', '')
+    data.setdefault('@animation_email_notifications_smtp_port', 587)
+    data.setdefault('@animation_email_notifications_smtp_account', '')
+    data.setdefault('@animation_email_notifications_smtp_password', '')
+    data.setdefault('@animation_email_notifications_smtp_tls', True)
+
+    # telegram notifications
+    data.setdefault('@telegram_enabled', False)
+    data.setdefault('@telegram_motion_enabled', False)
+    data.setdefault('@telegram_animation_enabled', False)
+    data.setdefault('@telegram_token', '')
+    data.setdefault('@telegram_name', '')
+
+    # working schedule
     data.setdefault('@working_schedule', '')
     data.setdefault('@working_schedule_type', 'outside')
 
@@ -2047,6 +2185,10 @@ def _set_default_motion_camera(camera_id, data):
     data.setdefault('on_event_end', '')
     data.setdefault('on_movie_end', '')
     data.setdefault('on_picture_save', '')
+
+    # telegram notifications
+    data.setdefault('@geofence_enabled', False)
+    data.setdefault('@geofence_ips', '')
 
 
 def _set_default_simple_mjpeg_camera(camera_id, data):

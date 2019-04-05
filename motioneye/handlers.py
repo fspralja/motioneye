@@ -913,6 +913,15 @@ class ConfigHandler(BaseHandler):
                     logging.error('notification email test failed: %s' % msg, exc_info=True)
                     self.finish_json({'error': str(msg)})
 
+            elif what == 'telegram':
+                logging.debug('testing notification telegram')
+                import notifications
+                res = notifications.send_telegram_notification(camera_config={'@telegram_token': data['telegram_token'], '@telegram_name': data['telegram_name']}, message="Hello telegram!")
+                if res is None:
+                    self.finish_json()
+                else:
+                    self.finish_json({'error': str(res)})
+
             elif what == 'network_share':
                 logging.debug('testing access to network share //%s/%s' % (data['server'], data['share']))
 
@@ -1804,6 +1813,9 @@ class RelayEventHandler(BaseHandler):
             return self.finish_json()
         
         if event == 'start':
+            import notifications
+            notifications.queue_motion(camera_id, camera_config)
+
             if not camera_config['@motion_detection']:
                 logging.debug('ignoring start event for camera with id %s and motion detection disabled' % camera_id)
                 return self.finish_json()
@@ -1824,6 +1836,9 @@ class RelayEventHandler(BaseHandler):
             if camera_config['@upload_enabled'] and camera_config['@upload_movie']:
                 self.upload_media_file(filename, camera_id, camera_config)
 
+            if camera_config['@animation_enabled']:
+                self.make_animation_file(filename, camera_config)
+
         elif event == 'picture_save':
             filename = self.get_argument('filename')
             
@@ -1843,6 +1858,10 @@ class RelayEventHandler(BaseHandler):
                 camera_id=camera_id, service_name=service_name,
                 target_dir=camera_config['@upload_subfolders'] and camera_config['target_dir'],
                 filename=filename)
+
+    def make_animation_file(self, filename, camera_config):
+        tasks.add(0, mediafiles.make_animation, tag='make_animation_file(%s)' % filename,
+                  camera_config=camera_config, full_path=filename)
 
 
 class LogHandler(BaseHandler):

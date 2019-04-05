@@ -18,7 +18,9 @@ RUN apt-get update && \
     apt-get upgrade --yes && \
     DEBIAN_FRONTEND="noninteractive" apt-get --yes --option Dpkg::Options::="--force-confnew" --no-install-recommends install \
     curl \
+    iputils-ping \
     ffmpeg \
+    gifsicle \
     libmysqlclient20 \
     libpq5 \
     lsb-release \
