@@ -25,7 +25,7 @@
                 <input type="text" class="styled {{config['section']}} {% if config.get('camera') %}camera{% else %}main{% endif %}-config" id="{{config['name']}}Entry">
                 {% if config['unit'] %}<span class="settings-item-unit">{{config['unit']}}</span>{% endif %}
             {% elif config['type'] == 'pwd' %}
-                <input type="password" class="styled {{config['section']}} {% if config.get('camera') %}camera{% else %}main{% endif %}-config" id="{{config['name']}}Entry">
+                <input type="password" autocomplete="new-password" class="styled {{config['section']}} {% if config.get('camera') %}camera{% else %}main{% endif %}-config" id="{{config['name']}}Entry">
             {% elif config['type'] == 'number' %}
                 <input type="text" class="number styled {{config['section']}} {% if config.get('camera') %}camera{% else %}main{% endif %}-config" id="{{config['name']}}Entry">
                 {% if config['unit'] %}<span class="settings-item-unit">{{config['unit']}}</span>{% endif %}
@@ -103,6 +103,7 @@
     <div class="page">
         <div class="settings closed">
             <div class="settings-container">
+                <form autocomplete="new-password">
                 <!-- Preferences -->
                 <div class="settings-section-title" id="preferencesDiv">
                     <span class="help-mark" title="user preferences">?</span>
@@ -160,7 +161,7 @@
                     </tr>
                     <tr class="settings-item" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">Admin Password</span></td>
-                        <td class="settings-item-value"><input type="password" class="styled general main-config" id="adminPasswordEntry"></td>
+                            <td class="settings-item-value"><input type="password" autocomplete="new-password" class="styled general main-config" id="adminPasswordEntry"></td>
                         <td><span class="help-mark" title="administrator's password">?</span></td>
                     </tr>
                     <tr class="settings-item" required="true" strip="true">
@@ -170,7 +171,7 @@
                     </tr>
                     <tr class="settings-item" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">Surveillance Password</span></td>
-                        <td class="settings-item-value"><input type="password" class="styled general main-config" id="normalPasswordEntry"></td>
+                            <td class="settings-item-value"><input type="password" autocomplete="new-password" class="styled general main-config" id="normalPasswordEntry"></td>
                         <td><span class="help-mark" title="the password for the surveillance user (leave empty for passwordless surveillance)">?</span></td>
                     </tr>
                     {% for config in main_sections.get('general', {}).get('configs', []) %}
@@ -278,26 +279,6 @@
                         <td class="settings-item-value"><input type="checkbox" class="styled device camera-config" id="autoBrightnessSwitch"></td>
                         <td><span class="help-mark" title="enables software automatic brightness (only recommended for cameras without autobrightness)">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" min="0" max="100" snap="2" ticksnum="5" decimals="0" unit="%">
-                        <td class="settings-item-label"><span class="settings-item-label">Brightness</span></td>
-                        <td class="settings-item-value"><input type="text" class="range styled device camera-config" id="brightnessSlider"></td>
-                        <td><span class="help-mark" title="sets a desired brightness level for this camera">?</span></td>
-                    </tr>
-                    <tr class="settings-item advanced-setting" min="0" max="100" snap="2" ticksnum="5" decimals="0" unit="%">
-                        <td class="settings-item-label"><span class="settings-item-label">Contrast</span></td>
-                        <td class="settings-item-value"><input type="text" class="range styled device camera-config" id="contrastSlider"></td>
-                        <td><span class="help-mark" title="sets a desired contrast level for this camera">?</span></td>
-                    </tr>
-                    <tr class="settings-item advanced-setting" min="0" max="100" snap="2" ticksnum="5" decimals="0" unit="%">
-                        <td class="settings-item-label"><span class="settings-item-label">Saturation</span></td>
-                        <td class="settings-item-value"><input type="text" class="range styled device camera-config" id="saturationSlider"></td>
-                        <td><span class="help-mark" title="sets a desired saturation level for this camera">?</span></td>
-                    </tr>
-                    <tr class="settings-item advanced-setting" min="0" max="100" snap="2" ticksnum="5" decimals="0" unit="%">
-                        <td class="settings-item-label"><span class="settings-item-label">Hue</span></td>
-                        <td class="settings-item-value"><input type="text" class="range styled device camera-config" id="hueSlider"></td>
-                        <td><span class="help-mark" title="sets a desired hue for this camera">?</span></td>
-                    </tr>
                     <tr class="settings-item advanced-setting">
                         <td colspan="100"><div class="settings-item-separator"></div></td>
                     </tr>
@@ -391,7 +372,7 @@
                     </tr>
                     <tr class="settings-item advanced-setting" depends="storageDevice=network-share" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">Share Password</span></td>
-                        <td class="settings-item-value"><input type="password" class="styled storage camera-config" id="networkPasswordEntry"></td>
+                            <td class="settings-item-value"><input type="password" autocomplete="new-password" class="styled storage camera-config" id="networkPasswordEntry"></td>
                         <td><span class="help-mark" title="the password required by the network share (leave empty if no password is required)">?</span></td>
                     </tr>
                     <tr class="settings-item advanced-setting" required="true" strip="true">
@@ -476,6 +457,11 @@
                         <td class="settings-item-value"><input type="checkbox" class="styled storage camera-config" id="uploadSubfoldersSwitch"></td>
                         <td><span class="help-mark" title="enable this to upload the media files together with their subfolders, instead of placing them directly into the root location">?</span></td>
                     </tr>
+                        <tr class="settings-item advanced-setting" depends="uploadEnabled uploadService=(gdrive)">
+                            <td class="settings-item-label"><span class="settings-item-label">Clean Cloud</span></td>
+                            <td class="settings-item-value"><input type="checkbox" class="styled storage camera-config" id="cleanCloudEnabledSwitch"></td>
+                            <td><span class="help-mark" title="enable this to delete the uploaded media files on cloud as well when the local media files get deleted according to file persistence setting, currently this option is available only for gdrive">?</span></td>
+                        </tr>
                     <tr class="settings-item advanced-setting" depends="uploadEnabled uploadService=(ftp|sftp|http|https)">
                         <td class="settings-item-label"><span class="settings-item-label">Username</span></td>
                         <td class="settings-item-value"><input type="text" autocapitalize="none" class="styled storage camera-config" id="uploadUsernameEntry"></td>
@@ -483,12 +469,12 @@
                     </tr>
                     <tr class="settings-item advanced-setting" depends="uploadEnabled uploadService=(ftp|sftp|http|https)">
                         <td class="settings-item-label"><span class="settings-item-label">Password</span></td>
-                        <td class="settings-item-value"><input type="password" class="styled storage camera-config" id="uploadPasswordEntry"></td>
+                            <td class="settings-item-value"><input type="password" autocomplete="new-password" class="styled storage camera-config" id="uploadPasswordEntry"></td>
                         <td><span class="help-mark" title="the password for the upload service account">?</span></td>
                     </tr>
                     <tr class="settings-item advanced-setting" depends="uploadEnabled uploadService=(gdrive|dropbox)">
                         <td class="settings-item-label"><span class="settings-item-label">Authorization Key</span></td>
-                        <td class="settings-item-value"><input type="password" class="styled storage camera-config" id="uploadAuthorizationKeyEntry"></td>
+                            <td class="settings-item-value"><input type="password" autocomplete="new-password" class="styled storage camera-config" id="uploadAuthorizationKeyEntry"></td>
                         <td><span class="help-mark" title="the key used to authenticate with the upload service (normally required only during setup)">?</span></td>
                     </tr>
                     <tr class="settings-item advanced-setting" depends="uploadEnabled uploadService=(gdrive|dropbox)">
@@ -590,6 +576,11 @@
                         <td class="settings-item-value"><input type="text" class="styled text-overlay camera-config" id="rightTextEntry" placeholder="custom text..."></td>
                         <td><span class="help-mark" title="sets a custom right text; the following special tokens are accepted: %Y = year, %m = month, %d = day, %H = hour, %M = minute, %S = second, %q = frame number, %v = event number, %T = HH:MM:SS, \n = new line">?</span></td>
                     </tr>
+                        <tr class="settings-item" min="1" max="10" snap="1" ticksnum="10" decimals="0">
+                            <td class="settings-item-label"><span class="settings-item-label">Text Scale</span></td>
+                            <td class="settings-item-value"><input type="text" class="range styled text-overlay camera-config" id="textScaleSlider"></td>
+                            <td><span class="help-mark" title="sets the size of the overlay text">?</span></td>
+                        </tr>
                     {% for config in camera_sections.get('text-overlay', {}).get('configs', []) %}
                         {{config_item(config)}}
                     {% endfor %}
@@ -628,7 +619,6 @@
                         <td class="settings-item-value"><input type="text" class="styled streaming camera-config" id="streamingPortEntry"></td>
                         <td><span class="help-mark" title="sets the TCP port on which the webcam streaming server listens">?</span></td>
                     </tr>
-                    {% if has_streaming_auth %}
                     <tr class="settings-item advanced-setting" depends="videoStreamingEnabled">
                         <td class="settings-item-label"><span class="settings-item-label">Authentication Mode</span></td>
                         <td class="settings-item-value">
@@ -640,7 +630,6 @@
                         </td>
                         <td><span class="help-mark" title="the authentication method used by the stream (choose Basic instead of Digest if you encounter issues with third party apps); surveillance credentials will be used">?</span></td>
                     </tr>
-                    {% endif %}
                     <tr class="settings-item advanced-setting">
                         <td class="settings-item-label"><span class="settings-item-label">Motion Optimization</span></td>
                         <td class="settings-item-value"><input type="checkbox" class="styled streaming camera-config" id="streamingMotion"></td>
@@ -772,7 +761,6 @@
                                 <option value="swf">Small Web Format (.swf)</option>
                                 <option value="flv">Flash Video (.flv)</option>
                                 <option value="mov">QuickTime (.mov)</option>
-                                {% if has_new_movie_format_support %}
                                 <option value="mp4">H.264 (.mp4)</option>
                                 {% if has_h264_omx_support %}
                                 <option value="mp4:h264_omx">H.264/OMX (.mp4)</option>
@@ -781,7 +769,6 @@
                                 <option value="mkv">Matroska Video (.mkv)</option>
                                 {% if has_h264_omx_support %}
                                 <option value="mkv:h264_omx">Matroska Video/OMX (.mkv)</option>
-                                {% endif %}
                                 {% endif %}
                             </select>
                         </td>
@@ -991,7 +978,7 @@
                     </tr>
                     <tr class="settings-item advanced-setting" required="true" depends="emailNotificationsEnabled motionDetectionEnabled" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">Email Addresses</span></td>
-                        <td class="settings-item-value"><input type="text" class="styled notifications camera-config" id="emailAddressesEntry" placeholder="email addresses..."></td>
+                            <td class="settings-item-value"><input type="text" autocomplete="new-password" class="styled notifications camera-config" id="emailAddressesEntry" placeholder="email addresses..."></td>
                         <td><span class="help-mark" title="email addresses (separated by comma) that are added here will receive notifications whenever a motion event is detected">?</span></td>
                     </tr>
                     <tr class="settings-item advanced-setting" required="true" depends="emailNotificationsEnabled motionDetectionEnabled" strip="true">
@@ -1011,7 +998,7 @@
                     </tr>
                     <tr class="settings-item advanced-setting" depends="emailNotificationsEnabled motionDetectionEnabled" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">SMTP Password</span></td>
-                        <td class="settings-item-value"><input type="password" class="styled notifications camera-config" id="smtpPasswordEntry"></td>
+                            <td class="settings-item-value"><input type="password" autocomplete="new-password" class="styled notifications camera-config" id="smtpPasswordEntry"></td>
                         <td><span class="help-mark" title="enter your SMTP account password (for Gmail use your Google password or an app-specific generated password)">?</span></td>
                     </tr>
                     <tr class="settings-item advanced-setting" depends="emailNotificationsEnabled motionDetectionEnabled" strip="true">
@@ -1294,6 +1281,7 @@
                 {% endfor %}
 
                 <div class="settings-progress"></div>
+                </form>
             </div>
         </div>
         <img class="background-logo" src="{{static_path}}img/motioneye-logo.svg" onmousedown="return false;">

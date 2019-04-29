@@ -63,7 +63,7 @@ setup(
 
     packages=['motioneye'],
 
-    install_requires=['tornado>=3.1', 'jinja2', 'pillow', 'pycurl', 'python-telegram-bot>=5.0'],
+    install_requires=['tornado>=3.1,<6', 'jinja2', 'pillow', 'pycurl', 'python-telegram-bot>=5.0'],
 
     package_data={
         'motioneye': [

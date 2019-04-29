@@ -785,6 +785,15 @@ function initUI() {
             this.value = '/' + this.value;
         }
     });
+    $('#cleanCloudEnabledSwitch').change(function () {
+        var enabled = this.checked;
+        var folder = $('#uploadLocationEntry').val();
+        console.log('cleanCloudEnabled', enabled, folder);
+        if (enabled) {
+            runAlertDialog(('This will recursively remove all files present in the cloud folder "' + folder + 
+                    '", not just those uploaded by motionEye!'));
+        }
+    });
     
     /* streaming framerate must be >= device framerate + a margin */
     $('#framerateSlider').change(function () {
@@ -849,12 +858,6 @@ function initUI() {
     $('input.camera-config, select.camera-config, textarea.camera-config').change(function () {
         pushCameraConfig($(this).parents('tr:eq(0)').attr('reboot') == 'true');
     });
-    
-    /* preview controls */
-    $('#brightnessSlider').change(function () {pushPreview('brightness');});
-    $('#contrastSlider').change(function () {pushPreview('contrast');});
-    $('#saturationSlider').change(function () {pushPreview('saturation');});
-    $('#hueSlider').change(function () {pushPreview('hue');});
     
     /* whenever the window is resized,
      * if a modal dialog is visible, it should be repositioned */
@@ -954,6 +957,46 @@ function initUI() {
 
         clearMask(cameraId);
     });    
+}
+
+function addVideoControl(name, min, max, step) {
+    var prevTr = $('#autoBrightnessSwitch').parent().parent();
+    var controlTr = $('\
+        <tr class="settings-item advanced-setting video-control"> \
+            <td class="settings-item-label"><span class="settings-item-label"></span></td> \
+            <td class="settings-item-value"><input type="text" class="range styled device camera-config"></td> \
+        </tr>');
+
+    prevTr.after(controlTr);
+    var controlLabel = controlTr.find('span.settings-item-label');
+    var controlInput = controlTr.find('input');
+
+    controlInput.attr('id', name + 'VideoControlSlider');
+    controlTr.attr('name', name);
+
+    /* make name pretty */
+    var title = name.replace(new RegExp('[^a-z0-9]', 'ig'), ' ');
+    title = title.replace (/\s(\w)/g, function (_, c) {
+        return c ? ' ' + c.toUpperCase () : ' ';
+    });
+
+    title = title.substr(0, 1).toUpperCase() + title.substr(1);
+
+    controlLabel.text(title);
+
+    if (min == 0 && max == 1) {
+        controlInput.attr('type', 'checkbox');
+        makeCheckBox(controlInput);
+    }
+    else {
+        var ticksNumber = 3;
+        if (max - min <= 6) {
+            ticksNumber = max - min + 1;
+        }
+        makeSlider(controlInput, min, max, /* snapMode = */ 0, /* ticks = */ null, ticksNumber, null, null);
+    }
+
+    return controlInput;
 }
 
 function getPageContainer() {
@@ -1857,6 +1900,7 @@ function cameraUi2Dict() {
         'upload_username': $('#uploadUsernameEntry').val(),
         'upload_password': $('#uploadPasswordEntry').val(),
         'upload_authorization_key': $('#uploadAuthorizationKeyEntry').val(),
+        'clean_cloud_enabled': $('#cleanCloudEnabledSwitch')[0].checked,
         'web_hook_storage_enabled': $('#webHookStorageEnabledSwitch')[0].checked,
         'web_hook_storage_url': $('#webHookStorageUrlEntry').val(),
         'web_hook_storage_http_method': $('#webHookStorageHttpMethodSelect').val(),
@@ -1869,6 +1913,7 @@ function cameraUi2Dict() {
         'custom_left_text': $('#leftTextEntry').val(),
         'right_text': $('#rightTextTypeSelect').val(),
         'custom_right_text': $('#rightTextEntry').val(),
+        'text_scale': $('#textScaleSlider').val(),
         
         /* video streaming */
         'video_streaming': $('#videoStreamingEnabledSwitch')[0].checked,
@@ -1981,7 +2026,27 @@ function cameraUi2Dict() {
         'geofence_enabled': $('#geofenceEnabledSwitch')[0].checked,
         'geofence_ips': $('#geofenceIpsEntry').val()
     };
-    
+
+    /* video controls */
+    var videoControls = {};
+    $('tr.video-control').each(function () {
+        var $this = $(this);
+        var $input = $this.find('input');
+        var value;
+        if ($input[0].type == 'checkbox') {
+            value = $input[0].checked ? 1 : 0;
+        }
+        else {
+            value = Number($input.val());
+        }
+
+        videoControls[$this.attr('name')] = {
+            'value': value
+        };
+    });
+
+    dict['video_controls'] = videoControls;
+
     /* if all working schedule days are disabled,
      * also disable the global working schedule */
     var hasWS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].some(function (day) {
@@ -1999,22 +2064,6 @@ function cameraUi2Dict() {
         dict.resolution = $('#resolutionSelect').val();
     }
 
-    if ($('#brightnessSlider').val() !== '') {
-        dict.brightness = $('#brightnessSlider').val();
-    }
-
-    if ($('#contrastSlider').val() !== '') {
-        dict.contrast = $('#contrastSlider').val();
-    }
-    
-    if ($('#saturationSlider').val() !== '') {
-        dict.saturation = $('#saturationSlider').val();
-    }
-    
-    if ($('#hueSlider').val() !== '') {
-        dict.hue = $('#hueSlider').val();
-    }
-    
     /* additional sections */
     $('input[type=checkbox].additional-section.camera-config').each(function () {
         dict['_' + this.id.substring(0, this.id.length - 6)] = this.checked;
@@ -2118,11 +2167,6 @@ function dict2CameraUi(dict) {
     $('#deviceTypeEntry').val(prettyType); markHideIfNull(!prettyType, 'deviceTypeEntry');
     $('#deviceTypeEntry')[0].proto = dict['proto'];
     $('#autoBrightnessSwitch')[0].checked = dict['auto_brightness']; markHideIfNull('auto_brightness', 'autoBrightnessSwitch');
-    
-    $('#brightnessSlider').val(dict['brightness']); markHideIfNull('brightness', 'brightnessSlider');
-    $('#contrastSlider').val(dict['contrast']); markHideIfNull('contrast', 'contrastSlider');
-    $('#saturationSlider').val(dict['saturation']); markHideIfNull('saturation', 'saturationSlider');
-    $('#hueSlider').val(dict['hue']); markHideIfNull('hue', 'hueSlider');
 
     $('#resolutionSelect').html('');
     if (dict['available_resolutions']) {
@@ -2205,6 +2249,7 @@ function dict2CameraUi(dict) {
     $('#uploadUsernameEntry').val(dict['upload_username']); markHideIfNull('upload_username', 'uploadUsernameEntry');
     $('#uploadPasswordEntry').val(dict['upload_password']); markHideIfNull('upload_password', 'uploadPasswordEntry');
     $('#uploadAuthorizationKeyEntry').val(dict['upload_authorization_key']); markHideIfNull('upload_authorization_key', 'uploadAuthorizationKeyEntry');
+    $('#cleanCloudEnabledSwitch')[0].checked = dict['clean_cloud_enabled']; markHideIfNull('clean_cloud_enabled', 'cleanCloudEnabledSwitch');
 
     $('#webHookStorageEnabledSwitch')[0].checked = dict['web_hook_storage_enabled']; markHideIfNull('web_hook_storage_enabled', 'webHookStorageEnabledSwitch');
     $('#webHookStorageUrlEntry').val(dict['web_hook_storage_url']);
@@ -2219,6 +2264,7 @@ function dict2CameraUi(dict) {
     $('#leftTextEntry').val(dict['custom_left_text']); markHideIfNull('custom_left_text', 'leftTextEntry');
     $('#rightTextTypeSelect').val(dict['right_text']); markHideIfNull('right_text', 'rightTextTypeSelect');
     $('#rightTextEntry').val(dict['custom_right_text']); markHideIfNull('custom_right_text', 'rightTextEntry');
+    $('#textScaleSlider').val(dict['text_scale']); markHideIfNull('text_scale', 'textScaleSlider');
     
     /* video streaming */
     $('#videoStreamingEnabledSwitch')[0].checked = dict['video_streaming']; markHideIfNull('video_streaming', 'videoStreamingEnabledSwitch');
@@ -2387,6 +2433,35 @@ function dict2CameraUi(dict) {
     $('#geofenceEnabledSwitch')[0].checked = dict['geofence_enabled'];
     $('#geofenceIpsEntry').val(dict['geofence_ips']);
     
+
+    /* video controls */
+    $('tr.video-control').remove();
+    if (dict['video_controls']) {
+        var videoControls = Object.keys(dict['video_controls']).map(function (n) {
+            dict['video_controls'][n].name = n;
+            return dict['video_controls'][n];
+        });
+        videoControls.sort(function (c1, c2) {
+            if (c1.name < c2.name) {
+                return 1;
+            }
+            else if (c1.name > c2.name) {
+                return -1;
+            }
+            else {
+                return 0;
+            }
+        });
+        videoControls.forEach(function (c) {
+            var controlInput = addVideoControl(c.name, c.min, c.max, c.step);
+            controlInput.val(c.value);
+            controlInput[0].checked = Boolean(c.value);
+            controlInput.change(function () {
+                pushCameraConfig(/* reboot = */ false);
+            });
+        });
+    }
+
     /* additional sections */
     $('input[type=checkbox].additional-section.main-config').each(function () {
         var name = this.id.substring(0, this.id.length - 6);
@@ -3378,44 +3453,6 @@ function pushCameraConfig(reboot) {
     }
 }
 
-function pushPreview(control) {
-    var cameraId = $('#cameraSelect').val();
-    
-    var brightness = $('#brightnessSlider').val();
-    var contrast= $('#contrastSlider').val();
-    var saturation = $('#saturationSlider').val();
-    var hue = $('#hueSlider').val();
-    
-    var data = {};
-    
-    if (brightness !== '' && (!control || control == 'brightness')) {
-        data.brightness = brightness;
-    }
-    
-    if (contrast !== '' && (!control || control == 'contrast')) {
-        data.contrast = contrast;
-    }
-    
-    if (saturation !== '' && (!control || control == 'saturation')) {
-        data.saturation = saturation;
-    }
-    
-    if (hue !== '' && (!control || control == 'hue')) {
-        data.hue = hue;
-    }
-    
-    refreshDisabled[cameraId] |= 0;
-    refreshDisabled[cameraId]++;
-    
-    ajax('POST', basePath + 'config/' + cameraId + '/set_preview/', data, function (data) {
-        refreshDisabled[cameraId]--;
-        
-        if (data == null || data.error) {
-            showErrorMessage(data && data.error);
-        }
-    });
-}
-
 function getCameraIdsByInstance() {
     /* a motion instance is identified by the (host, port) pair;
      * the local instance has both the host and the port set to empty string */
@@ -3769,6 +3806,8 @@ function runAddCameraDialog() {
     var addCameraSelect = content.find('#addCameraSelect');
     var addCameraInfo = content.find('#addCameraInfo');
     var cameraMsgLabel = content.find('#cameraMsgLabel');
+
+    var isProgress = false;
     
     /* make validators */
     makeUrlValidator(urlEntry, true);
@@ -3848,6 +3887,11 @@ function runAddCameraDialog() {
     }
     
     function uiValid(includeCameraSelect) {
+        if (isProgress) {
+            /* add dialog is not valid while in progress */
+            return false;
+        }
+
         var query = content.find('input, select');
         if (!includeCameraSelect) {
             query = query.not('#addCameraSelect');
@@ -3928,9 +3972,11 @@ function runAddCameraDialog() {
         }
         
         cameraMsgLabel.html('');
-        
+
+        isProgress = true;
         ajax('GET', basePath + 'config/list/', data, function (data) {
             progress.remove();
+            isProgress = false;
             
             if (data == null || data.error) {
                 cameraMsgLabel.html(data && data.error);

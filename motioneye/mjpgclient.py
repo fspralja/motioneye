@@ -139,10 +139,13 @@ class MjpgClient(IOStream):
             logging.debug('mjpg client using basic authentication')
 
             auth_header = utils.build_basic_header(self._username, self._password)
-            self.write('GET / HTTP/1.0\r\n\r\nAuthorization: %s\r\n\r\n' % auth_header)
+            self.write('GET / HTTP/1.1\r\nAuthorization: %s\r\nConnection: close\r\n\r\n' % auth_header)
+
+        elif self._auth_mode == 'digest':  # in digest auth mode, the header is built upon receiving 401
+            self.write('GET / HTTP/1.1\r\n\r\n')
             
-        else:  # in digest auth mode, the header is built upon receiving 401
-            self.write('GET / HTTP/1.0\r\n\r\n')
+        else:  # no authentication
+            self.write('GET / HTTP/1.1\r\nConnection: close\r\n\r\n')
 
         self._seek_http()
 
@@ -174,27 +177,30 @@ class MjpgClient(IOStream):
     def _on_www_authenticate(self, data):
         if self._check_error():
             return
+
+        data = data.strip()
         
-        m = re.match('Basic\s*realm="([a-zA-Z0-9\-\s]+)"', data.strip())
+        m = re.match('Basic\s*realm="([a-zA-Z0-9\-\s]+)"', data)
         if m:
             logging.debug('mjpg client using basic authentication')
             
             auth_header = utils.build_basic_header(self._username, self._password)
-            self.write('GET / HTTP/1.0\r\n\r\nAuthorization: %s\r\n\r\n' % auth_header)
+            self.write('GET / HTTP/1.1\r\nAuthorization: %s\r\nConnection: close\r\n\r\n' % auth_header)
             self._seek_http()
 
             return
 
-        m = re.match('Digest\s*realm="([a-zA-Z0-9\-\s]+)",\s*nonce="([a-zA-Z0-9]+)"', data.strip())
-        if m:
+        if data.startswith('Digest'):
             logging.debug('mjpg client using digest authentication')
 
-            realm, nonce = m.groups()
-            self._auth_digest_state['realm'] = realm
-            self._auth_digest_state['nonce'] = nonce
-    
+            parts = data[7:].split(',')
+            parts_dict = dict(p.split('=', 1) for p in parts)
+            parts_dict = {p[0]: p[1].strip('"') for p in parts_dict.items()}
+
+            self._auth_digest_state = parts_dict
+
             auth_header = utils.build_digest_header('GET', '/', self._username, self._password, self._auth_digest_state)
-            self.write('GET / HTTP/1.0\r\n\r\nAuthorization: %s\r\n\r\n' % auth_header)
+            self.write('GET / HTTP/1.1\r\nAuthorization: %s\r\nConnection: close\r\n\r\n' % auth_header)
             self._seek_http()
             
             return
