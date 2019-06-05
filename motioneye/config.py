@@ -105,6 +105,8 @@ _USED_MOTION_OPTIONS = {
     'text_left',
     'text_right',
     'threshold',
+    'threshold_maximum',
+    'threshold_tune',
     'videodevice',
     'vid_control_params',
     'webcontrol_interface',
@@ -503,13 +505,6 @@ def add_camera(device_details):
         if device_details['port']:
             host += ':' + str(device_details['port'])
 
-        if device_details['username'] and proto == 'mjpeg':
-            if device_details['password']:
-                host = device_details['username'] + ':' + device_details['password'] + '@' + host
-
-            else:
-                host = device_details['username'] + '@' + host
-
         device_details['url'] = urlparse.urlunparse(
                 (device_details['scheme'], host, device_details['path'], '', '', ''))
 
@@ -624,7 +619,6 @@ def rem_camera(camera_id):
 
 def main_ui_to_dict(ui):
     data = {
-        '@show_advanced': ui['show_advanced'],
         '@admin_username': ui['admin_username'],
         '@normal_username': ui['normal_username']
     }
@@ -669,7 +663,6 @@ def main_ui_to_dict(ui):
 
 def main_dict_to_ui(data):
     ui = {
-        'show_advanced': data['@show_advanced'],
         'admin_username': data['@admin_username'],
         'normal_username': data['@normal_username']
     }
@@ -776,6 +769,8 @@ def motion_camera_ui_to_dict(ui, prev_config=None):
         'emulate_motion': False,
         'text_changes': ui['show_frame_changes'],
         'locate_motion_mode': ui['show_frame_changes'],
+        'threshold_maximum': ui['max_frame_change_threshold'],
+        'threshold_tune': ui['auto_threshold_tuning'],
         'noise_tune': ui['auto_noise_detect'],
         'noise_level': max(1, int(round(int(ui['noise_level']) * 2.55))),
         'lightswitch_percent': ui['light_switch_detect'],
@@ -861,6 +856,7 @@ def motion_camera_ui_to_dict(ui, prev_config=None):
             threshold = int(float(ui['frame_change_threshold']) * 640 * 480 / 100)
 
     data['threshold'] = threshold
+    
 
     if (ui['storage_device'] == 'network-share') and settings.SMB_SHARES:
         mount_point = smbctl.make_mount_point(ui['network_server'], ui['network_share_name'], ui['network_username'])
@@ -1197,6 +1193,8 @@ def motion_camera_dict_to_ui(data):
         'motion_detection': data['@motion_detection'],
         'show_frame_changes': data['text_changes'] or data['locate_motion_mode'],
         'auto_noise_detect': data['noise_tune'],
+        'max_frame_change_threshold': data['threshold_maximum'],
+        'auto_threshold_tuning': data['threshold_tune'],
         'noise_level': int(int(data['noise_level']) / 2.55),
         'light_switch_detect': data['lightswitch_percent'],
         'despeckle_filter': data['despeckle_filter'],
@@ -1949,7 +1947,6 @@ def _dict_to_conf(lines, data, list_names=None):
 def _set_default_motion(data):
     data.setdefault('@enabled', True)
 
-    data.setdefault('@show_advanced', False)
     data.setdefault('@admin_username', 'admin')
     data.setdefault('@admin_password', '')
     data.setdefault('@normal_username', 'user')
@@ -2016,6 +2013,8 @@ def _set_default_motion_camera(camera_id, data):
     data.setdefault('locate_motion_style', 'redbox')
 
     data.setdefault('threshold', 2000)
+    data.setdefault('threshold_maximum', 0)
+    data.setdefault('threshold_tune', False)
     data.setdefault('noise_tune', True)
     data.setdefault('noise_level', 32)
     data.setdefault('lightswitch_percent', 0)
