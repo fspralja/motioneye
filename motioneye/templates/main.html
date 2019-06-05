@@ -810,30 +810,30 @@
                         <td><span class="help-mark" title="sets the number of days after which the movies will be deleted automatically">?</span></td>
                     </tr>
 
-                    <tr class="settings-item advanced-setting" depends="motionDetectionEnabled preserveMovies">
+                    <tr class="settings-item" depends="motionDetectionEnabled preserveMovies">
                         <td colspan="100"><div class="settings-item-separator"></div></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" depends="motionDetectionEnabled preserveMovies">
+                    <tr class="settings-item" depends="motionDetectionEnabled preserveMovies">
                         <td class="settings-item-label"><span class="settings-item-label">Create animation</span></td>
                         <td class="settings-item-value"><input type="checkbox" class="styled movies camera-config" id="animationEnabledSwitch"></td>
                         <td><span class="help-mark" title="enable this if you want to create animation after motion triggered video was created, check notification options for animation use after enabling.">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" required="true" depends="animationEnabled motionDetectionEnabled preserveMovies" strip="true">
+                    <tr class="settings-item" required="true" depends="animationEnabled motionDetectionEnabled preserveMovies" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">Animation resolution</span></td>
                         <td class="settings-item-value"><input type="text" class="number styled movies camera-config" id="animationResolutionEntry" placeholder="480"><span class="settings-item-unit">pixel</span></td>
                         <td><span class="help-mark" title="The resulting image width in pixels">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" required="true" depends="animationEnabled motionDetectionEnabled preserveMovies" strip="true">
+                    <tr class="settings-item" required="true" depends="animationEnabled motionDetectionEnabled preserveMovies" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">Framerate</span></td>
                         <td class="settings-item-value"><input type="text" class="number styled movies camera-config" id="animationFramerateEntry" placeholder="1"><span class="settings-item-unit">fps</span></td>
                         <td><span class="help-mark" title="The numbers of frames taken out of the movie per second">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" required="true" depends="animationEnabled motionDetectionEnabled preserveMovies" strip="true">
+                    <tr class="settings-item" required="true" depends="animationEnabled motionDetectionEnabled preserveMovies" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">Animation delay</span></td>
                         <td class="settings-item-value"><input type="text" class="number styled movies camera-config" id="animationDelayEntry" placeholder="10"><span class="settings-item-unit">ms</span></td>
                         <td><span class="help-mark" title="The delay between resulting animation frames in milliseconds">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" required="true" depends="animationEnabled motionDetectionEnabled preserveMovies" strip="true">
+                    <tr class="settings-item" required="true" depends="animationEnabled motionDetectionEnabled preserveMovies" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">Optimization level</span></td>
                         <td class="settings-item-value">
                             <select class="styled movies camera-config" id="animationOptimizeSelect">
@@ -1028,84 +1028,84 @@
                         <td><span class="help-mark" title="click this button to test email notifications after you have filled in the required details">?</span></td>
                     </tr>
 
-                    <tr class="settings-item advanced-setting" depends="motionDetectionEnabled animationEnabled">
+                    <tr class="settings-item" depends="motionDetectionEnabled animationEnabled">
                         <td colspan="100"><div class="settings-item-separator"></div></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" depends="motionDetectionEnabled animationEnabled">
+                    <tr class="settings-item" depends="motionDetectionEnabled animationEnabled">
                         <td class="settings-item-label"><span class="settings-item-label">Send An Animation Email</span></td>
                         <td class="settings-item-value"><input type="checkbox" class="styled notifications camera-config" id="emailAnimationNotificationsEnabledSwitch"></td>
                         <td><span class="help-mark" title="enable this if you want to send email animations when movie finished creating">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" required="true" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled" strip="true">
+                    <tr class="settings-item" required="true" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">Email Addresses</span></td>
                         <td class="settings-item-value"><input type="text" class="styled notifications camera-config" id="emailAnimationAddressesEntry" placeholder="email addresses..."></td>
                         <td><span class="help-mark" title="email addresses (separated by comma) that are added here will receive notifications whenever a motion event is detected">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" required="true" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled" strip="true">
+                    <tr class="settings-item" required="true" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">SMTP Server</span></td>
                         <td class="settings-item-value"><input type="text" class="styled notifications camera-config" id="smtpAnimationServerEntry" placeholder="e.g. smtp.gmail.com"></td>
                         <td><span class="help-mark" title="enter the hostname or IP address of your SMTP server (for Gmail use smtp.gmail.com)">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" min="1" max="65535" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled" required="true">
+                    <tr class="settings-item" min="1" max="65535" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled" required="true">
                         <td class="settings-item-label"><span class="settings-item-label">SMTP Port</span></td>
                         <td class="settings-item-value"><input type="text" class="styled number notifications camera-config" id="smtpAnimationPortEntry" placeholder="e.g. 587"></td>
                         <td><span class="help-mark" title="enter the port used by your SMTP server (usually 465 for non-TLS connections and 587 for TLS connections)">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled" strip="true">
+                    <tr class="settings-item" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">SMTP Account</span></td>
                         <td class="settings-item-value"><input type="text" class="styled notifications camera-config" id="smtpAnimationAccountEntry" placeholder="account@gmail.com..."></td>
                         <td><span class="help-mark" title="enter your SMTP account (normally your email address)">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled" strip="true">
+                    <tr class="settings-item" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">SMTP Password</span></td>
                         <td class="settings-item-value"><input type="password" class="styled notifications camera-config" id="smtpAnimationPasswordEntry"></td>
                         <td><span class="help-mark" title="enter your SMTP account password (for Gmail use your Google password or an app-specific generated password)">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled" strip="true">
+                    <tr class="settings-item" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">From Address</span></td>
                         <td class="settings-item-value"><input type="text" class="styled notifications camera-config" id="emailAnimationFromEntry" placeholder="email address..."></td>
                         <td><span class="help-mark" title="set a custom From address, if your SMTP service requires one (the first destination email address will be used if left blank)">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled">
+                    <tr class="settings-item" depends="emailAnimationNotificationsEnabled motionDetectionEnabled animationEnabled">
                         <td class="settings-item-label"><span class="settings-item-label">Use TLS</span></td>
                         <td class="settings-item-value"><input type="checkbox" class="styled notifications camera-config" id="smtpAnimationTlsSwitch"></td>
                         <td><span class="help-mark" title="enable this if your SMTP server requires TLS (Gmail needs this to be enabled)">?</span></td>
                     </tr>
 
-                    <tr class="settings-item advanced-setting" depends="motionDetectionEnabled">
+                    <tr class="settings-item" depends="motionDetectionEnabled">
                         <td colspan="100"><div class="settings-item-separator"></div></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" depends="motionDetectionEnabled">
+                    <tr class="settings-item" depends="motionDetectionEnabled">
                         <td class="settings-item-label"><span class="settings-item-label">Telegram messaging</span></td>
                         <td class="settings-item-value"><input type="checkbox" class="styled notifications camera-config" id="telegramNotificationsEnabledSwitch"></td>
                         <td><span class="help-mark" title="enable this if you want to receive an telegram messages">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" depends="telegramNotificationsEnabled motionDetectionEnabled">
+                    <tr class="settings-item" depends="telegramNotificationsEnabled motionDetectionEnabled">
                         <td class="settings-item-label"><span class="settings-item-label"></span></td>
                         <td class="settings-item-value"><div class="button normal-button test-button" id="telegramGuideButton" onclick="window.open('https://core.telegram.org/bots#', '_blank');">Setup guide</div></td>
                         <td><span class="help-mark" title="open this to see official telegram bot setup guide">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" required="true" depends="telegramNotificationsEnabled motionDetectionEnabled" strip="true">
+                    <tr class="settings-item" required="true" depends="telegramNotificationsEnabled motionDetectionEnabled" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">Telegram token</span></td>
                         <td class="settings-item-value"><input type="text" class="styled notifications camera-config" id="telegramTokenEntry" placeholder="e.g. XXXXXXXXX:YYYYYYYY..."></td>
                         <td><span class="help-mark" title="enter the telegram bot token">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" required="false" depends="telegramNotificationsEnabled motionDetectionEnabled" strip="true">
+                    <tr class="settings-item" required="false" depends="telegramNotificationsEnabled motionDetectionEnabled" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">Group/bot name</span></td>
                         <td class="settings-item-value"><input type="text" class="styled notifications camera-config" id="telegramNameEntry" placeholder="e.g. motionEye"></td>
                         <td><span class="help-mark" title="enter the telegram group name without @ prefix or leave empty to send to the bot channel">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" depends="telegramNotificationsEnabled motionDetectionEnabled">
+                    <tr class="settings-item" depends="telegramNotificationsEnabled motionDetectionEnabled">
                         <td class="settings-item-label"><span class="settings-item-label">Send motion event message</span></td>
                         <td class="settings-item-value"><input type="checkbox" class="styled notifications camera-config" id="telegramMotionNotificationsEnabledSwitch"></td>
                         <td><span class="help-mark" title="enable this if you want to receive an telegram messages whenever a motion was detected">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" depends="telegramNotificationsEnabled motionDetectionEnabled animationEnabled">
+                    <tr class="settings-item" depends="telegramNotificationsEnabled motionDetectionEnabled animationEnabled">
                         <td class="settings-item-label"><span class="settings-item-label">Send animation message</span></td>
                         <td class="settings-item-value"><input type="checkbox" class="styled notifications camera-config" id="telegramAnimationNotificationsEnabledSwitch"></td>
                         <td><span class="help-mark" title="enable this if you want to receive an telegram messages whenever a movie animation was created">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" depends="telegramNotificationsEnabled motionDetectionEnabled">
+                    <tr class="settings-item" depends="telegramNotificationsEnabled motionDetectionEnabled">
                         <td class="settings-item-label"><span class="settings-item-label"></span></td>
                         <td class="settings-item-value"><div class="button normal-button test-button" id="telegramTestButton">Test Telegram</div></td>
                         <td><span class="help-mark" title="click this button to test telegram message after you have filled in the required details">?</span></td>
@@ -1250,15 +1250,15 @@
                     </tr>
 
                     <!-- Geofence -->
-                    <tr class="settings-item advanced-setting" depends="motionDetectionEnabled">
+                    <tr class="settings-item" depends="motionDetectionEnabled">
                         <td colspan="100"><div class="settings-item-separator"></div></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" depends="motionDetectionEnabled">
+                    <tr class="settings-item" depends="motionDetectionEnabled">
                         <td class="settings-item-label"><span class="settings-item-label">Geofencing</span></td>
                         <td class="settings-item-value"><input type="checkbox" class="styled notifications camera-config" id="geofenceEnabledSwitch"></td>
                         <td><span class="help-mark" title="enable this if you want to stop notifications when specified devices are on same network, works in conjunction with working schedule">?</span></td>
                     </tr>
-                    <tr class="settings-item advanced-setting" required="true" depends="geofenceEnabled motionDetectionEnabled" strip="true">
+                    <tr class="settings-item" required="true" depends="geofenceEnabled motionDetectionEnabled" strip="true">
                         <td class="settings-item-label"><span class="settings-item-label">Device IP's</span></td>
                         <td class="settings-item-value"><input type="text" class="styled notifications camera-config" id="geofenceIpsEntry" placeholder="192.168.0.18, ..."></td>
                         <td><span class="help-mark" title="comma separated list of IP's to check">?</span></td>
