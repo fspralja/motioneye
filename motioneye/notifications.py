@@ -32,7 +32,7 @@ def queue_motion(camera_id, camera_config):
         import tzctl
         message = sendmail.messages['motion_start']
         format_dict = {
-            'camera': camera_config['@name'],
+            'camera': camera_config['camera_name'],
             'hostname': socket.gethostname(),
             'moment': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         }
@@ -92,7 +92,7 @@ def send_email_notification(camera_config, files):
         subject = sendmail.subjects['motion_end']
         message = sendmail.messages['motion_start']
         format_dict = {
-            'camera': camera_config['@name'],
+            'camera': camera_config['camera_name'],
             'hostname': socket.gethostname(),
             'moment': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         }
