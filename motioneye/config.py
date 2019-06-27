@@ -457,8 +457,8 @@ def set_camera(camera_id, camera_config):
     elif utils.is_simple_mjpeg_camera(camera_config):
         _set_additional_config(camera_config, camera_id=camera_id)
 
-    import notifications
-    notifications.config_changed()
+    #import notifications
+    #notifications.config_changed()
 
     # read the actual configuration from file
     config_file_path = os.path.join(settings.CONF_PATH, _CAMERA_CONFIG_FILE_NAME) % {'id': camera_id}

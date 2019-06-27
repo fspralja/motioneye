@@ -22,8 +22,6 @@ import tasks
 import settings
 
 
-_telegram_chat_ids = {}
-
 
 def queue_motion(camera_id, camera_config):
     try:
@@ -130,32 +128,40 @@ def send_telegram_notification(camera_config, file=None, message=None):
 
         channel_name = camera_config.get( '@telegram_name', 'bot')
         chat_cache_id = '%s:%s' % (camera_config['@telegram_token'], channel_name)
-        global _telegram_chat_ids
-        if _telegram_chat_ids.get(chat_cache_id, None) is None:
+        if camera_config['@telegram_chat_id'] is None:
             logging.debug("telegram me: %s" % bot.get_me())
             updates = bot.get_updates(allowed_updates=["message"], limit=5)
             for u in updates:
                 logging.debug('finding chat_id in update message chat id: %s, type: %s, title: %s ' % (u.message.chat.id, u.message.chat.type, u.message.chat.title))
+                import config
                 if u.message.chat.type == 'private' and (channel_name == 'bot' or channel_name == ''):
                     logging.debug('found telegram chat_id %s for bot: %s' % (u.message.chat.id, channel_name))
-                    _telegram_chat_ids[chat_cache_id] = u.message.chat.id
+
+                    if camera_config["@id"] is not None:
+                        camera_config['@telegram_chat_id_%s' % chat_cache_id] = u.message.chat.id
+                        config.set_camera(camera_config['@id'], camera_config)
+
                     break
                 elif u.message.chat.type != 'private' and channel_name == u.message.chat.title:
                     logging.debug("found telegram chat_id %s for group: %s" % (u.message.chat.id, channel_name))
-                    _telegram_chat_ids[chat_cache_id] = u.message.chat.id
+
+                    if camera_config["@id"] is not None:
+                        camera_config['@telegram_chat_id_%s' % chat_cache_id] = u.message.chat.id
+                        config.set_camera(camera_config['@id'], camera_config)
+
                     break
 
-        if _telegram_chat_ids.get(chat_cache_id, None) is None:
+        if camera_config['@telegram_chat_id'] is None:
             logging.error('no chat_id found for telegram token and telegram_name %s, try sending a message to group or bot...' % channel_name)
             return 'no chat_id found for telegram token and telegram_name %s, try sending a message to the group/bot...' % channel_name
 
         if file is not None:
-            logging.debug('sending photo to telegram %s chat_id: %s' % (channel_name, _telegram_chat_ids[chat_cache_id]))
-            bot.send_animation(chat_id=_telegram_chat_ids[chat_cache_id], animation=open(file, 'rb'), caption=message)
+            logging.debug('sending photo to telegram %s chat_id: %s' % (channel_name, camera_config['@telegram_chat_id']))
+            bot.send_animation(chat_id=camera_config['@telegram_chat_id'], animation=open(file, 'rb'), caption=message)
         else:
             logging.debug(
-                'sending text to telegram %s chat_id: %s' % (channel_name, _telegram_chat_ids[chat_cache_id]))
-            bot.send_message(chat_id=_telegram_chat_ids[chat_cache_id], text=message)
+                'sending text to telegram %s chat_id: %s' % (channel_name, camera_config['@telegram_chat_id']))
+            bot.send_message(chat_id=camera_config['@telegram_chat_id'], text=message)
         return None
 
     except Exception as e:
@@ -163,7 +169,7 @@ def send_telegram_notification(camera_config, file=None, message=None):
         return e.message
 
 
-def config_changed():
-    logging.debug('clearing telegram chat_id cache...')
-    global _telegram_chat_ids
-    _telegram_chat_ids = {}
+#def config_changed():
+    #logging.debug('clearing telegram chat_id cache...')
+    #global _telegram_chat_ids
+    #_telegram_chat_ids = {}
