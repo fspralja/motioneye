@@ -128,7 +128,8 @@ def send_telegram_notification(camera_config, file=None, message=None):
 
         channel_name = camera_config.get('@telegram_name', 'bot')
         chat_cache_id = '%s_%s' % (camera_config['@telegram_token'], channel_name)
-        chat_id = '@telegram_chat_id_%s' % chat_cache_id
+        chat_id = ('@telegram_chat_id_%s' % (abs(hash(chat_cache_id)) % (10 ** 8)))
+        logging.debug("camera %s telegram chat_id: %s %s" % (camera_config['@id'], chat_id, camera_config.get(chat_id)))
         if camera_config.get(chat_id, None) is None:
             logging.debug("telegram me: %s" % bot.get_me())
             updates = bot.get_updates(allowed_updates=["message"], limit=5)
@@ -169,8 +170,3 @@ def send_telegram_notification(camera_config, file=None, message=None):
         logging.error('queue animation notification telegram failed: %s' % e.message, exc_info=True)
         return e.message
 
-
-#def config_changed():
-    #logging.debug('clearing telegram chat_id cache...')
-    #global _telegram_chat_ids
-    #_telegram_chat_ids = {}

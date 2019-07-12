@@ -138,8 +138,10 @@ def _check_ws():
                 try:
                     subprocess.check_call(['ping', '-c1', ip], stdout=open(os.devnull, 'w'))
                     must_be_enabled = False
+                    logging.debug('ip %s present' % ip)
                     break
                 except:
+                    logging.debug('ip %s NOT present' % ip)
                     pass
 
         motionctl.get_motion_detection(camera_id, functools.partial(
