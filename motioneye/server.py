@@ -411,6 +411,9 @@ def run():
 
     logging.info('server stopped')
     
+    wsswitch.stop()
+    logging.info('wsswitch stopped')
+    
     tasks.stop()
     logging.info('tasks stopped')
 

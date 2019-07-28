@@ -23,15 +23,49 @@ import os
 import socket
 
 from tornado.ioloop import IOLoop
+import multiprocessing
 
 import config
 import motionctl
 import utils
 
 
+# we must be sure there's only one extra process that handles all tasks
+# TODO replace the pool with one simple thread
+_POOL_SIZE = 1
+_pool = None
+_INTERVAL = 10
+
 def start():
+    global _pool
+
     io_loop = IOLoop.instance()
-    io_loop.add_timeout(datetime.timedelta(seconds=1), _check_ws)
+    io_loop.add_timeout(datetime.timedelta(seconds=_INTERVAL), _check_tasks)
+
+    def init_pool_process():
+        import signal
+
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+
+    _pool = multiprocessing.Pool(_POOL_SIZE, initializer=init_pool_process)
+
+
+def stop():
+    global _pool
+    if _pool is not None:
+        _pool.close()
+    _pool = None
+
+
+def _check_tasks():
+    io_loop = IOLoop.instance()
+    io_loop.add_timeout(datetime.timedelta(seconds=_INTERVAL), _check_tasks)
+
+    if not motionctl.running():
+        return
+
+    _pool.apply_async(_check_ws)
 
 
 def _during_working_schedule(now, working_schedule):
@@ -75,13 +109,6 @@ def _during_working_schedule(now, working_schedule):
 
 
 def _check_ws():
-    # schedule the next call
-    io_loop = IOLoop.instance()
-    io_loop.add_timeout(datetime.timedelta(seconds=10), _check_ws)
-
-    if not motionctl.running():
-        return
-    
     def on_motion_detection_status(camera_id, must_be_enabled, working_schedule_type, enabled=None, error=None):
         if error:  # could not detect current status
             return logging.warn('skipping motion detection status update for camera with id %(id)s: %(error)s' % {
