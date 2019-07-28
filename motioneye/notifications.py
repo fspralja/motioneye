@@ -128,7 +128,7 @@ def send_telegram_notification(camera_config, file=None, message=None):
 
         channel_name = camera_config.get('@telegram_name', 'bot')
         chat_cache_id = '%s_%s' % (camera_config['@telegram_token'], channel_name)
-        chat_id = ('@telegram_chat_id_%s' % (abs(hash(chat_cache_id)) % (10 ** 8)))
+        chat_id = ('@telegram_chat_id_%s' % (abs(hash(chat_cache_id.replace(':', '_'))) % (10 ** 8)))
         logging.debug("camera %s telegram chat_id: %s %s" % (camera_config['@id'], chat_id, camera_config.get(chat_id)))
         if camera_config.get(chat_id, None) is None:
             logging.debug("telegram me: %s" % bot.get_me())
@@ -139,7 +139,7 @@ def send_telegram_notification(camera_config, file=None, message=None):
                 if u.message.chat.type == 'private' and (channel_name == 'bot' or channel_name == ''):
                     logging.debug('found telegram chat_id %s for bot: %s' % (u.message.chat.id, channel_name))
 
-                    if camera_config["@id"] is not None:
+                    if camera_config.get("@id") is not None:
                         camera_config[chat_id] = u.message.chat.id
                         config.set_camera(camera_config['@id'], camera_config)
 
@@ -147,7 +147,7 @@ def send_telegram_notification(camera_config, file=None, message=None):
                 elif u.message.chat.type != 'private' and channel_name == u.message.chat.title:
                     logging.debug("found telegram chat_id %s for group: %s" % (u.message.chat.id, channel_name))
 
-                    if camera_config["@id"] is not None:
+                    if camera_config.get("@id") is not None:
                         camera_config[chat_id] = u.message.chat.id
                         config.set_camera(camera_config['@id'], camera_config)
 
