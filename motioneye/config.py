@@ -1489,7 +1489,7 @@ def motion_camera_dict_to_ui(data):
     command_notifications = []
     for e in on_event_start:
         if e.count(' sendmail '):
-            e = shlex.split(e)
+            e = shlex.split(utils.make_str(e)) # poor shlex can't deal with unicode properly
 
             if len(e) < 10:
                 continue
@@ -1513,7 +1513,7 @@ def motion_camera_dict_to_ui(data):
                 ui['email_notifications_picture_time_span'] = 0
 
         elif e.count(' webhook '):
-            e = shlex.split(e)
+            e = shlex.split(utils.make_str(e)) # poor shlex can't deal with unicode properly
 
             if len(e) < 3:
                 continue
@@ -1557,7 +1557,7 @@ def motion_camera_dict_to_ui(data):
     command_storage = []
     for e in on_movie_end:
         if e.count(' webhook '):
-            e = shlex.split(e)
+            e = shlex.split(utils.make_str(e)) # poor shlex can't deal with unicode properly
 
             if len(e) < 3:
                 continue
